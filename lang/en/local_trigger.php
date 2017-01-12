@@ -16,10 +16,16 @@
 
 /**
  * Web service template plugin related strings
- * @package   localwstemplate
- * @copyright 2011 Moodle Pty Ltd (http://moodle.com)
- * @author    Jerome Mouneyrac
+ * @package   local_trigger
+ * @copyright 2016 Poodll Co. Ltd (https://poodll.com)
+ * @author    Justin Hunt
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Zapier Moodle integration';
+$string['pluginname'] = 'Trigger';
+$string['triggersettings'] = 'Triggers';
+$string['settingheading'] = 'Trigger: ';
+$string['triggerevent'] = 'Trigger event (Moodle)';
+$string['triggerwebhook'] = 'Trigger webhook (Zapier)';
+$string['triggercount'] = 'Trigger count';
+$string['triggercount_desc'] = 'Set the number of triggers you want to register here. After you visit your site notifications area, those settings fields will be added or removed.';

@@ -16,13 +16,13 @@
 /**
  * External Web Service Template
  *
- * @package    local_zapier
+ * @package    local_trigger
  * @copyright  2011 Moodle Pty Ltd (http://moodle.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once($CFG->libdir . "/externallib.php");
 
-class local_zapier_external extends external_api {
+class local_trigger_services extends external_api {
 
     /**
      * Returns description of method parameters
@@ -48,7 +48,7 @@ class local_zapier_external extends external_api {
 
         //Context validation
         //OPTIONAL but in most web service it should present
-        $context = get_context_instance(CONTEXT_USER, $USER->id);
+        $context = context_user::instance($USER->id);
         self::validate_context($context);
 
         //Capability checking
@@ -68,6 +68,102 @@ class local_zapier_external extends external_api {
         return new external_value(PARAM_TEXT, 'The welcome message + user first name');
     }
 
+    /*
+     * Create user
+     */
 
+    public static function create_user($welcomemessage = 'Hello world'){
+        //do something
+    }
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function create_user_parameters() {
+        return new external_function_parameters(
+            ['userdetails' => new external_value(PARAM_TEXT, 'The user details', VALUE_DEFAULT, 'bah blah')]
+        );
+    }
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function create_user_returns() {
+        return new external_value(PARAM_TEXT, 'The result of action');
+    }
+
+    /*
+     * Delete user
+     */
+
+    public static function delete_user($welcomemessage = 'Hello world'){
+        //do something
+    }
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function delete_user_parameters() {
+        return new external_function_parameters(
+            ['userdetails' => new external_value(PARAM_TEXT, 'The user details', VALUE_DEFAULT, 'bah blah')]
+        );
+    }
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function delete_user_returns() {
+        return new external_value(PARAM_TEXT, 'The result of action');
+    }
+
+    /*
+     * Enrol user
+     */
+
+    public static function enrol_user($welcomemessage = 'Hello world'){
+        //do something
+    }
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function enrol_user_parameters() {
+        return new external_function_parameters(
+            ['userdetails'=> new external_value(PARAM_TEXT, 'The user details', VALUE_DEFAULT, 'bah blah'),
+                'coursedetails' => new external_value(PARAM_TEXT, 'The course details', VALUE_DEFAULT, 'bah blah')]
+        );
+    }
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function enrol_user_returns() {
+        return new external_value(PARAM_TEXT, 'The result of action');
+    }
+
+    /*
+     * Unenrol user
+     */
+
+    public static function unenrol_user($welcomemessage = 'Hello world'){
+        //do something
+    }
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function unenrol_user_parameters() {
+        return new external_function_parameters(
+            ['userdetails' => new external_value(PARAM_TEXT, 'The user details', VALUE_DEFAULT, 'bah blah'),
+                'coursedetails' => new external_value(PARAM_TEXT, 'The course details', VALUE_DEFAULT, 'bah blah')]
+        );
+    }
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function unenrol_user_returns() {
+        return new external_value(PARAM_TEXT, 'The result of action');
+    }
 
 }

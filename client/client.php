@@ -1,12 +1,12 @@
 <?php
-// This client for local_zapier is free software: you can redistribute it and/or modify
+// This client for local_trigger is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
 
 /**
- * XMLRPC client for Moodle 2 - local_zapier
+ * XMLRPC client for Moodle 2 - local_trigger
  *
  * This script does not depend of any Moodle code,
  * and it can be called from a browser.
@@ -22,11 +22,11 @@
 // 5- Run this script directly from your browser: you should see 'Hello, FIRSTNAME'
 
 /// SETUP - NEED TO BE CHANGED
-$token = 'dff3bc6a9368d3b0db1ef59f6760ef7c';
-$domainname = 'http://YOURMOODLE';
+$token = 'f4307f2fa3f3f831d75659796b1e2db0';
+$domainname = 'http://localhost/moodle/moodle32';
 
 /// FUNCTION NAME
-$functionname = 'local_zapier_hello_world';
+$functionname = 'local_trigger_hello_world';
 
 /// PARAMETERS
 $welcomemsg = 'Hello, ';
