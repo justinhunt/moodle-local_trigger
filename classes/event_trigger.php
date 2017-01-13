@@ -40,7 +40,8 @@ class event_trigger
      */
     public static function trigger($event)
     {
-        global $DB;
+        global $DB,$CFG;
+        require_once($CFG->dirroot . '/user/profile/lib.php');
 
         //get the event data.
         $event_data = $event->get_data();
@@ -64,6 +65,14 @@ class event_trigger
                         $user = $DB->get_record('user', array('id' => $userid));
                         if ($user) {
                             unset($user->password);
+                            //profile fields
+                            $profileprops = get_object_vars(profile_user_record($user->id));
+                            if($profileprops){
+                                foreach($profileprops as $key=>$value){
+                                    $user->{'upf_' . $key}=$value;
+                                }
+                            }
+
                             $event_data['user'] = $user;
                         }
                     }
