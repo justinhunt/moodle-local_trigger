@@ -42,50 +42,71 @@ class event_trigger
     {
         global $DB;
 
-        $webhook=false;
+        //get the event data.
         $event_data = $event->get_data();
-      switch($event_data['eventname']){
-          case '\\core\event\user_enrolment_created':
-                $webhook='https://hooks.zapier.com/hooks/catch/959572/hol8zv/';
-                break;
-          case '\\core\event\user_enrolment_deleted':
-                $webhook='https://hooks.zapier.com/hooks/catch/959572/hol8zv/';
-                break;
-          case '\\core\event\user_enrolment_updated':
-                $webhook='https://hooks.zapier.com/hooks/catch/959572/hol8zv/';
-                break;
-      }
-      if($webhook){
-          //do DB stuff, probably most triggers will need user or course data
-          try{
-            //user data
-            if(array_key_exists('userid',$event_data)) {
-                $user = $DB->get_record('user', array('id' => $event_data['userid']));
-                if ($user) {
-                    unset($user->password);
-                    $event_data['user'] = $user;
+
+        //fetch the registered webhooks for that event. We should have one and sometimes more!!
+        $webhooks =  self::fetch_webhooks($event_data['eventname']);
+
+        foreach($webhooks as $webhook) {
+            if ($webhook && !empty($webhook)) {
+                //do DB stuff, probably most triggers will need user or course data
+                try {
+                    //user data
+                    $userid=false;
+                    if(array_key_exists('relateduserid', $event_data)){
+                        $userid = $event_data['relateduserid'];
+                        $event_data['userid'] = $userid;
+                    }elseif(array_key_exists('userid', $event_data)){
+                        $userid = $event_data['userid'];
+                    }
+                    if ($userid) {
+                        $user = $DB->get_record('user', array('id' => $userid));
+                        if ($user) {
+                            unset($user->password);
+                            $event_data['user'] = $user;
+                        }
+                    }
+                    //course data
+                    if (array_key_exists('courseid', $event_data)) {
+                        $course = $DB->get_record('course', array('id' => $event_data['courseid']));
+                        if ($course) {
+                            $event_data['course'] = $course;
+                        }
+                    }
+                } catch (\Exception $error) {
+                    debugging("fetching user/course data error for trigger request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
+                }
+
+                //do CURL request
+                try {
+                    $return = self::curl_data($webhook, $event_data);
+                } catch (\Exception $error) {
+                    debugging("cURL request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
+                }//end of try catch
+            }//end of if webhook or empty
+        }//end of it web hooks
+    }
+
+    public static function fetch_webhooks($eventname){
+
+        $webhooks = array();
+        $config = get_config('local_trigger');
+
+        if($config && property_exists($config, 'triggercount')) {
+            for ($tindex = 1; $tindex <= $config->triggercount; $tindex++){
+                if(property_exists($config, 'triggerevent'.$tindex) && property_exists($config, 'triggerwebhook'.$tindex) ){
+                    $prop_eventname = $config->{'triggerevent' . $tindex};
+                    if (strpos($prop_eventname, '\\') !== 0) {
+                        $prop_eventname= '\\'.$prop_eventname;
+                    }
+                    if($prop_eventname==$eventname){
+                       $webhooks[] = $config->{'triggerwebhook' . $tindex};
+                    }
                 }
             }
-              //course data
-              if(array_key_exists('courseid',$event_data)) {
-                  $course = $DB->get_record('course', array('id' => $event_data['courseid']));
-                  if ($course) {
-                      $event_data['course'] = $course;
-                  }
-              }
-          }catch(\Exception $error){
-              debugging("fetching user/course data error for trigger request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
-          }
-
-          //do CURL request
-            try {
-                $return = self::curl_data($webhook, $event_data);
-            }catch(\Exception $error){
-              debugging("cURL request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
-          }
-      }else{
-          return false;
-      }
+        }
+        return $webhooks;
     }
     
     public static function curl_data($webhook, $event_data){

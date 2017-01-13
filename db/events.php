@@ -17,28 +17,26 @@
 /**
  * Cohort enrolment plugin event handler definition.
  *
- * @package enrol_cohort
- * @category event
- * @copyright 2010 Petr Skoda {@link http://skodak.org}
+ * @package local_trigger
+ * @category local plugin
+ * @copyright 2017 Justin Hunt {@link https://poodll.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$observers = array(
-
-    array(
-        'eventname' => '\core\event\user_enrolment_created',
-        'callback' => '\local_trigger\event_trigger::trigger'
-    ),
-
-    array(
-        'eventname' => '\core\event\user_enrolment_deleted',
-        'callback' => '\local_trigger\event_trigger::trigger'
-    ),
-
-    array(
-        'eventname' => '\core\event\user_enrolment_updated',
-        'callback' => '\local_trigger\event_trigger::trigger'
-    )
-);
+$config = get_config('local_trigger');
+$observers = array();
+if($config && property_exists($config, 'triggercount')) {
+    for ($tindex = 1; $tindex <= $config->triggercount; $tindex++){
+        if(property_exists($config, 'triggerevent'.$tindex) && property_exists($config, 'triggerwebhook'.$tindex) ){
+            if(!empty($config->{'triggerevent' . $tindex}) && !empty($config->{'triggerwebhook' . $tindex})){
+                $observers[] = array(
+                    'eventname' => $config->{'triggerevent' . $tindex},
+                    'callback' => '\local_trigger\event_trigger::trigger',
+                    'internal' => false
+                );
+            }
+        }
+    }
+}

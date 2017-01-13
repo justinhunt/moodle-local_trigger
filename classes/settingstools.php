@@ -52,7 +52,7 @@ class settingstools
     public static function fetch_triggercount_item(){
 
 
-        $item= new \admin_setting_configtext('filter_poodll/triggercount',
+        $item= new \admin_setting_configtext('local_trigger/triggercount',
                     get_string('triggercount', 'local_trigger'),
                     get_string('triggercount_desc', 'local_trigger'),
                      5, PARAM_INT,20);
