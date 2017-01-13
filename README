@@ -1,9 +1,26 @@
-Web service template plugin for Moodle 2.X
+Broadcast Moodle events to pre-registered webhooks
 ------------------------------------------
 
-It is a template designed as a starting point for developing third party web services.
-It includes a simple Hello World example.
+This has been designed for use with Zapier but could be used in other situations too.
+It has been tested on Moodle 3.1 but should probably work in Moodle 2.7 or greater.
 
-To test:
-1- install the plugin in moodle/local/wstemplate/
-2- Read, setup and run moodle/local/wstemplate/client/client.php
+Installation
+--------------
+Download,unzip,rename Or git clone the plugin folder "trigger" into the [path/to/moodle]/local folder.
+
+
+Usage
+--------------
+On the settings page for the plugin enter eventname and webhook (url) pairs.
+e.g
+trigger: \core\event\user_enrolment_deleted
+webhook: https://hooks.zapier.com/hooks/catch/1020304/v9plzv/
+
+If the 5 slots are too few, you can add more by increasing the trigger count setting on the same page.
+
+After changing any of the settings on the settings page, you will need to "purge all caches" for any changes to be reflected.
+site admin->debugging->purge all caches
+
+
+Justin
+https://poodll.com
