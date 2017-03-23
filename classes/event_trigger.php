@@ -47,7 +47,7 @@ class event_trigger
         $event_data = $event->get_data();
 
         //fetch the registered webhooks for that event. We should have one and sometimes more!!
-        $webhooks =  self::fetch_webhooks($event_data['eventname']);
+        $webhooks =  webhooks::fetch_webhooks($event_data['eventname']);
 
         foreach($webhooks as $webhook) {
             if ($webhook && !empty($webhook)) {
@@ -89,86 +89,12 @@ class event_trigger
 
                 //do CURL request
                 try {
-                    $return = self::curl_data($webhook, $event_data);
+                    $return = webhooks::call_webhook($webhook, $event_data);
                 } catch (\Exception $error) {
                     debugging("cURL request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
                 }//end of try catch
             }//end of if webhook or empty
         }//end of it web hooks
-    }
-
-    public static function fetch_webhooks($eventname){
-
-        $webhooks = array();
-        $config = get_config('local_trigger');
-
-        if($config && property_exists($config, 'triggercount')) {
-            for ($tindex = 1; $tindex <= $config->triggercount; $tindex++){
-                if(property_exists($config, 'triggerevent'.$tindex) && property_exists($config, 'triggerwebhook'.$tindex) ){
-                    $prop_eventname = $config->{'triggerevent' . $tindex};
-                    if (strpos($prop_eventname, '\\') !== 0) {
-                        $prop_eventname= '\\'.$prop_eventname;
-                    }
-                    if($prop_eventname==$eventname){
-                       $webhooks[] = $config->{'triggerwebhook' . $tindex};
-                    }
-                }
-            }
-        }
-        return $webhooks;
-    }
-    
-    public static function curl_data($webhook, $event_data){
-       global $CFG;
-        require_once($CFG->libdir . '/filelib.php');
-
-            // Only http and https links supported.
-            if (!preg_match('|^https?://|i', $webhook)) {
-                    return false;
-            }
-
-            $options = array();
-            $options['CURLOPT_SSL_VERIFYPEER'] = true;
-            $options['CURLOPT_CONNECTTIMEOUT'] = 30;
-            $options['CURLOPT_FOLLOWLOCATION'] = 1;
-            $options['CURLOPT_MAXREDIRS'] = 5;
-            $options['CURLOPT_RETURNTRANSFER'] = true;
-            $options['CURLOPT_NOBODY'] = false;
-            $options['CURLOPT_TIMEOUT'] = 30;
-            $postdata = json_encode($event_data);
-
-            $curl = new \curl();
-
-
-            if (isset($postdata)) {
-                $content = $curl->post($webhook, $postdata, $options);
-            } else {
-                $content = $curl->get($webhook, null, $options);
-            }
-
-
-            $info       = $curl->get_info();
-            $error_no   = $curl->get_errno();
-            $rawheaders = $curl->get_raw_response();
-
-            if ($error_no) {
-                $error = $content;
-                debugging("cURL request for \"$webhook\" failed with: $error ($error_no)", DEBUG_ALL);
-                return false;
-            }
-
-            if (empty($info['http_code'])) {
-                debugging("cURL request for \"$webhook\" failed, HTTP response code: missing", DEBUG_ALL);
-                return false;
-            }
-
-            if ($info['http_code'] != 200) {
-                debugging("cURL request for \"$webhook\" failed, HTTP response code: ". $info['http_code'] , DEBUG_ALL);
-                return false;
-            }
-
-            //if we got here, we are all good baby
-            return true;
     }
 
 }
