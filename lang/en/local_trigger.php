@@ -46,8 +46,12 @@ $string['confirmitemdelete'] = 'Are you sure you want to <i>DELETE</i> item? : {
 $string['confirmitemdeletetitle'] = 'Really Delete item?';
 $string['noitems'] = 'There are no webhooks currently';
 $string['additem'] = 'Add Item';
+$string['enabled'] = 'enabled';
 $string['edit'] = 'Edit';
 $string['webhook'] = 'webhook';
 $string['event'] = 'event';
+$string['webhooks'] = 'webhooks';
+$string['managewebhooks'] = 'managewebhooks';
+$string['events'] = 'events';
 $string['description'] = 'description';
 

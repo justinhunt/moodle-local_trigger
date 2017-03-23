@@ -1,0 +1,107 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+
+defined('MOODLE_INTERNAL') || die();
+
+
+/**
+ * A custom renderer class that extends the plugin_renderer_base.
+ *
+ * @package local_trigger
+ * @copyright COPYRIGHTNOTICE
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class local_trigger_renderer extends plugin_renderer_base {
+
+ /**
+ * Return HTML to display add first page links
+ * @param lesson $lesson
+ * @return string
+ */
+ public function add_edit_page_links() {
+		global $CFG;
+        $itemid = 0;
+
+        $output = $this->output->heading(get_string("whatdonow", "local_trigger"), 3);
+        $links = array();
+
+        $itemurl = new moodle_url('/local/trigger/managewebhooks.php',
+			array('itemid'=>$itemid));
+        $links[] = html_writer::link($itemurl, get_string('additem', "local_trigger"));
+
+		
+        return $this->output->box($output.'<p>'.implode('</p><p>', $links).'</p>', 'generalbox firstpageoptions');
+    }
+	
+	/**
+	 * Return the table of items
+	 * @param array homework objects
+	 * @param integer $courseid
+	 * @return string html of table
+	 */
+	function show_items_list($items){
+	
+		if(!$items){
+			return $this->output->heading(get_string('noitems',"local_trigger"), 3, 'main');
+		}
+	
+		$table = new html_table();
+		$table->id = 'local_trigger_qpanel';
+		$table->head = array(
+			get_string('event', "local_trigger"),
+			get_string('webhook', "local_trigger"),
+			get_string('description', "local_trigger"),
+			get_string('actions', "local_trigger")
+		);
+		$table->headspan = array(1,1,1,3);
+		$table->colclasses = array(
+			'eventcol', 'webhookcol', 'descriptioncol', 'edit','preview','delete'
+		);
+
+		//sort by start date
+		core_collator::asort_objects_by_property($items,'timecreated',core_collator::SORT_NUMERIC);
+
+		//loop through the homoworks and add to table
+		foreach ($items as $item) {
+			$row = new html_table_row();
+		
+		
+			$eventcell = new html_table_cell($item->event);	
+			$webhookcell = new html_table_cell($item->webhook);	
+			$descriptioncell = new html_table_cell($item->description);	
+
+		
+			$actionurl = '/local/trigger/managewebhooks.php';
+			$editurl = new moodle_url($actionurl, array('itemid'=>$item->id));
+			$editlink = html_writer::link($editurl, get_string('edititem', "local_trigger"));
+			$editcell = new html_table_cell($editlink);
+			
+			$deleteurl = new moodle_url($actionurl, array('itemid'=>$item->id,'action'=>'confirmdelete'));
+			$deletelink = html_writer::link($deleteurl, get_string('deleteitem', "local_trigger"));
+			$deletecell = new html_table_cell($deletelink);
+
+			$row->cells = array(
+				$eventcell, $webhookcell, $descriptioncell, $editcell, $deletecell
+			);
+			$table->data[] = $row;
+		}
+
+		return html_writer::table($table);
+
+	}
+
+}
