@@ -23,6 +23,7 @@ defined('MOODLE_INTERNAL') || die;
         // Create
         $ADMIN->add('localplugins', $settings );
 
+        /*
         //How many triggers
         $conf = get_config('local_trigger');
         if ($conf && property_exists($conf, 'triggercount')) {
@@ -41,7 +42,8 @@ defined('MOODLE_INTERNAL') || die;
         foreach ($trigger_items as $trigger_item) {
             $settings->add($trigger_item);
         }
-        
+        */
+
         $ADMIN->add('root', new admin_category('trigger', new lang_string('pluginname', 'local_trigger')));
         $ADMIN->add('trigger', new admin_externalpage('trigger/webhooks',
         new lang_string('webhooks', 'local_trigger'),

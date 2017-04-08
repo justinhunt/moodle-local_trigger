@@ -27,6 +27,16 @@ defined('MOODLE_INTERNAL') || die();
 
 $config = get_config('local_trigger');
 $observers = array();
+
+$webhooks = \local_trigger\webhook::fetch_webhooks($event_data['eventname']);
+foreach($webhooks as $webhook){
+    $observers[] = array(
+        'eventname' => $webhook->event,
+        'callback' => '\local_trigger\event_trigger::trigger',
+        'internal' => false
+    );
+}
+/*
 if($config && property_exists($config, 'triggercount')) {
     for ($tindex = 1; $tindex <= $config->triggercount; $tindex++){
         if(property_exists($config, 'triggerevent'.$tindex) && property_exists($config, 'triggerwebhook'.$tindex) ){
@@ -40,3 +50,4 @@ if($config && property_exists($config, 'triggercount')) {
         }
     }
 }
+*/

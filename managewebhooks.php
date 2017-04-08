@@ -94,7 +94,7 @@ if ($mform->is_cancelled()) {
     exit;
 }
 
-//if we have data, then our job here is to save it and return to the quiz edit page
+//if we have data, then our job here is to save it and return to the webhook edit page
 if ($data = $mform->get_data()) {
 		require_sesskey();
 		

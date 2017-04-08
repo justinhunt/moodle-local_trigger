@@ -64,8 +64,14 @@ class webhookform extends \moodleform {
         $mform->addElement('hidden', 'itemid');
         $mform->setType('itemid', PARAM_INT);
 
-		$mform->addElement('text', 'event', get_string('event', 'local_trigger'), array('size'=>70));
-		$mform->setType('event', PARAM_TEXT);
+
+        $eventarray = \report_eventlist_list_generator::get_all_events_list(false);
+        foreach ($eventarray as $key=>$value){
+            $eventarray[$key]=$key;
+        }
+        $mform->addElement('select', 'event', get_string('event', 'local_trigger'), $eventarray);
+        //$mform->addElement('text', 'event', get_string('event', 'local_trigger'), array('size'=>70));
+		//$mform->setType('event', PARAM_TEXT);
 		$mform->addRule('event', get_string('required'), 'required', null, 'client');
 		
 		$mform->addElement('text', 'webhook', get_string('webhook', 'local_trigger'), array('size'=>70));

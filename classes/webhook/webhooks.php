@@ -78,12 +78,16 @@ class webhooks
         return $record;
     }
    
-    public static function fetch_webhooks($eventname,$enabled=true){
+    public static function fetch_webhooks($eventname=false,$enabled=true){
 		global $DB;
         $webhooks = array();
-        
-        $records = $DB->get_records(constants::WEBHOOK_TABLE,array('event'=>$eventname,'enabled'=>$enabled));
-        
+
+        if($eventname) {
+            $records = $DB->get_records(constants::WEBHOOK_TABLE, array('event' => $eventname, 'enabled' => $enabled));
+        }else{
+            $records = $DB->get_records(constants::WEBHOOK_TABLE);
+        }
+
         if($records){
         	foreach($records as $record){
         		$webhooks[]=$record->webhook;
