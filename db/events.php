@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 $config = get_config('local_trigger');
 $observers = array();
 
-$webhooks = \local_trigger\webhook::fetch_webhooks($event_data['eventname']);
+$webhooks = \local_trigger\webhook\webhooks::fetch_webhooks();
 foreach($webhooks as $webhook){
     $observers[] = array(
         'eventname' => $webhook->event,
