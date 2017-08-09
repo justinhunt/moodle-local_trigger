@@ -83,7 +83,9 @@ class webhooks
         $webhooks = array();
 
         if($eventname) {
-            $records = $DB->get_records(constants::WEBHOOK_TABLE, array('event' => $eventname, 'enabled' => $enabled));
+            $records = $DB->get_records_select(constants::WEBHOOK_TABLE,
+                     $DB->sql_compare_text('event') . ' = ? AND enabled = ?',
+                    array( $eventname,$enabled));
         }else{
             $records = $DB->get_records(constants::WEBHOOK_TABLE);
         }

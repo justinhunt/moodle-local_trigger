@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Cohort enrolment plugin event handler definition.
+ * Local trigger plugin event handler definition.
  *
  * @package local_trigger
  * @category local plugin
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 $config = get_config('local_trigger');
 $observers = array();
 
-$webhooks = \local_trigger\webhook\webhooks::fetch_webhooks();
+$webhooks = \local_trigger\webhook\webhooks::fetch_items();
 foreach($webhooks as $webhook){
     $observers[] = array(
         'eventname' => $webhook->event,
@@ -36,18 +36,3 @@ foreach($webhooks as $webhook){
         'internal' => false
     );
 }
-/*
-if($config && property_exists($config, 'triggercount')) {
-    for ($tindex = 1; $tindex <= $config->triggercount; $tindex++){
-        if(property_exists($config, 'triggerevent'.$tindex) && property_exists($config, 'triggerwebhook'.$tindex) ){
-            if(!empty($config->{'triggerevent' . $tindex}) && !empty($config->{'triggerwebhook' . $tindex})){
-                $observers[] = array(
-                    'eventname' => $config->{'triggerevent' . $tindex},
-                    'callback' => '\local_trigger\event_trigger::trigger',
-                    'internal' => false
-                );
-            }
-        }
-    }
-}
-*/

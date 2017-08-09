@@ -118,6 +118,7 @@ if ($data = $mform->get_data()) {
 			}
 		}else{
 			$theitem->id = \local_trigger\webhook\webhooks::add_item($theitem);
+
 			if (!$theitem->id){
 					error("Could not insert trigger item!");
 					redirect($redirecturl);

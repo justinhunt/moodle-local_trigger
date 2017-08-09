@@ -47,7 +47,7 @@ class event_trigger
         $event_data = $event->get_data();
 
         //fetch the registered webhooks for that event. We should have one and sometimes more!!
-        $webhooks =  webhooks::fetch_webhooks($event_data['eventname']);
+        $webhooks =  webhook\webhooks::fetch_webhooks($event_data['eventname']);
 
         foreach($webhooks as $webhook) {
             if ($webhook && !empty($webhook)) {
@@ -89,7 +89,7 @@ class event_trigger
 
                 //do CURL request
                 try {
-                    $return = webhooks::call_webhook($webhook, $event_data);
+                    $return = webhook\webhooks::call_webhook($webhook, $event_data);
                 } catch (\Exception $error) {
                     debugging("cURL request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
                 }//end of try catch
