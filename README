@@ -18,8 +18,10 @@ webhook: https://hooks.zapier.com/hooks/catch/1020304/v9plzv/
 
 If the 5 slots are too few, you can add more by increasing the trigger count setting on the same page.
 
-After changing any of the settings on the settings page, you will need to "purge all caches" for any changes to be reflected.
-site admin->debugging->purge all caches
+After changing any of the settings on the settings page, you will need to:
+i) visit your site's notifications page to make sure the new setting does not need to be "installed." If so, just let Moodle do that for you.
+ii) "purge all caches" for any changes to be reflected. Do that at: 
+  site admin->debugging->purge all caches
 
 
 Justin
