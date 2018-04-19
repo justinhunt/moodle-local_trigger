@@ -1,3 +1,7 @@
+Change List
+=========
+Version 1.1.0(Build 2018041000)
+-Implemented new Moodle Privacy API
 
 2017011101
 Initial commit of Trigger
