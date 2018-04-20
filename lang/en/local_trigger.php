@@ -54,4 +54,4 @@ $string['webhooks'] = 'Webhooks';
 $string['managewebhooks'] = 'Manage Webhooks';
 $string['events'] = 'Events';
 $string['description'] = 'Description';
-
+$string['privacy:metadata'] = 'The local_trigger plugin does not store any user data locally. It does act as a conduit to send event data to 3rd party services as determined by the site administrator.';
