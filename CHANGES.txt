@@ -1,5 +1,9 @@
 Change List
 =========
+Version 1.1.01(Build 2018060600)
+-Removed old web services code we dont need
+-Fixed bug where a webhook would get more than one notification if another webhook used the same event
+
 Version 1.1.0(Build 2018041000)
 -Implemented new Moodle Privacy API
 
