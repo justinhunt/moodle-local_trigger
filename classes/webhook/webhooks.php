@@ -66,7 +66,11 @@ class webhooks
    
    public static function fetch_items(){
 		global $DB;
-        $records = $DB->get_records(constants::WEBHOOK_TABLE,array());
+		//when installing several plugins at once, we can arrive here BEFORE table created. ouch
+		$tables = $DB->get_tables();
+		if(in_array(constants::WEBHOOK_TABLE,$tables)) {
+            $records = $DB->get_records(constants::WEBHOOK_TABLE, array());
+        }
         
         return $records;
     }

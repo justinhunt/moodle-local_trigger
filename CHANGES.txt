@@ -1,5 +1,8 @@
 Change List
 =========
+Version 1.1.02(Build 2020032700)
+-added check for fetching_items, before items table created..
+
 Version 1.1.01(Build 2018060600)
 -Removed old web services code we dont need
 -Fixed bug where a webhook would get more than one notification if another webhook used the same event
