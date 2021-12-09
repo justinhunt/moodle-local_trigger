@@ -12,7 +12,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 $plugin->component = 'local_trigger';
-$plugin->version  = 2020032700;
+$plugin->version  = 2021120900;
 $plugin->requires = 2010112400;  // Requires this Moodle version - at least 2.0
-$plugin->release = ' 1.1.02(Build 2020032700)';
+$plugin->release = ' 1.1.03(Build 2021120900)';
 $plugin->maturity = MATURITY_STABLE;

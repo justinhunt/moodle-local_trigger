@@ -30,15 +30,17 @@ $observers = array();
 $added = array();
 
 $webhooks = \local_trigger\webhook\webhooks::fetch_items();
-foreach($webhooks as $webhook) {
-    //we only want to add each event once, even if multiple trigger webhooks for it are registered
-    //when it fires we loop through the registered hooks
-    if (!array_key_exists($webhook->event, $added)) {
-        $added[$webhook->event]=true;
-        $observers[] = array(
-            'eventname' => $webhook->event,
-            'callback' => '\local_trigger\event_trigger::trigger',
-            'internal' => false
-        );
+if($webhooks) {
+    foreach ($webhooks as $webhook) {
+        //we only want to add each event once, even if multiple trigger webhooks for it are registered
+        //when it fires we loop through the registered hooks
+        if (!array_key_exists($webhook->event, $added)) {
+            $added[$webhook->event] = true;
+            $observers[] = array(
+                'eventname' => $webhook->event,
+                'callback' => '\local_trigger\event_trigger::trigger',
+                'internal' => false
+            );
+        }
     }
 }

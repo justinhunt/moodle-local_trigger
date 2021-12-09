@@ -68,6 +68,7 @@ class webhooks
 		global $DB;
 		//when installing several plugins at once, we can arrive here BEFORE table created. ouch
 		$tables = $DB->get_tables();
+		$records =false;
 		if(in_array(constants::WEBHOOK_TABLE,$tables)) {
             $records = $DB->get_records(constants::WEBHOOK_TABLE, array());
         }
