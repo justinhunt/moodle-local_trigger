@@ -1,4 +1,6 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -11,8 +13,24 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-$plugin->component = 'local_trigger';
-$plugin->version  = 2022052500;
-$plugin->requires = 2010112400;  // Requires this Moodle version - at least 2.0
-$plugin->release = ' 1.1.04(Build 2022052500)';
-$plugin->maturity = MATURITY_STABLE;
+
+/**
+ * Plugin capabilities
+ *
+ * @package    local_trigger
+ * @copyright  2022 Justin Hunt {@link http://www.poodll.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$capabilities = array(
+        'local/trigger:canviewsettings' => array(
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => array(
+                        'manager' => CAP_ALLOW
+                ),
+        )
+);
+

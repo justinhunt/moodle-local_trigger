@@ -1,5 +1,8 @@
 Change List
 =========
+Version 1.1.04(Build 2022052500)
+- added a new capability to allow manager to see trigger settings
+
 Version 1.1.02(Build 2020032700)
 -added check for fetching_items, before items table created..
 
