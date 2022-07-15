@@ -45,7 +45,7 @@ function xmldb_local_trigger_upgrade($oldversion) {
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
 
 
-    if ($oldversion < 2018060900) {
+    if ($oldversion < 2022071500) {
         $table = new xmldb_table('local_trigger_webhooks');
 
         // Adding fields to table tool_dataprivacy_contextlist.
@@ -69,7 +69,7 @@ function xmldb_local_trigger_upgrade($oldversion) {
         }
 
 
-        upgrade_mod_savepoint(true, 2018060900, 'local_trigger');
+        upgrade_mod_savepoint(true, 2022071500, 'local_trigger');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.
