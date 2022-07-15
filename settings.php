@@ -18,7 +18,7 @@ defined('MOODLE_INTERNAL') || die;
     if ($hassiteconfig ) {
 
         // Create the new settings page
-        $settings = new admin_settingpage('local_trigger',get_string('triggersettings', 'local_trigger'));
+        $settings = new admin_settingpage('local_trigger',get_string('triggersettings', 'local_trigger'),'local/trigger:canviewsettings');
         // Create
         $ADMIN->add('localplugins', $settings );
 
