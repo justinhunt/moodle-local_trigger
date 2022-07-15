@@ -69,7 +69,7 @@ function xmldb_local_trigger_upgrade($oldversion) {
         }
 
 
-        upgrade_plugin_savepoint(true, 2022071501, 'local','cpapi');
+        upgrade_plugin_savepoint(true, 2022071501, 'local','trigger');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.
