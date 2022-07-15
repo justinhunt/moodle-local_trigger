@@ -1,5 +1,9 @@
 Change List
 =========
+Version 1.1.05(Build 2022071500)
+- added upgrade to to add table
+- allowed manager to see settings
+
 Version 1.1.04(Build 2022052500)
 - added a new capability to allow manager to see trigger settings
 
