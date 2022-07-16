@@ -75,7 +75,7 @@ class webhookform extends \moodleform {
 		$mform->addRule('event', get_string('required'), 'required', null, 'client');
 		
 		$mform->addElement('text', 'webhook', get_string('webhook', 'local_trigger'), array('size'=>70));
-		$mform->setType('webhook', PARAM_TEXT);
+		$mform->setType('webhook', PARAM_URL);
 		$mform->addRule('webhook', get_string('required'), 'required', null, 'client');
 		
 		$mform->addElement('text', 'description', get_string('description', 'local_trigger'), array('size'=>70));

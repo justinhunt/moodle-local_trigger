@@ -36,6 +36,7 @@ $PAGE->set_heading(get_string('managewebhooks','local_trigger'));
 $PAGE->set_pagelayout('admin');
 
 require_login();
+require_capability('local/trigger:canviewsettings',$context);
 
 
 // first collect any params passed into this page
