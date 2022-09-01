@@ -107,6 +107,12 @@ if ($data = $mform->get_data()) {
 		$theitem->enabled = $data->enabled;
 		$theitem->modifiedby=$USER->id;
 		$theitem->timemodified=time();
+
+		//reload cache flag.
+        //If we are registering a new event, then we need to purge the events cache
+		$reloadcache =false;
+        $eventhooks = local_trigger\webhook\webhooks::fetch_webhooks($theitem->event);
+        if(count($eventhooks)==0){$reloadcache=true;}
 		
 		//first insert a new item if we need to
 		//that will give us a itemid, we need that for saving files
@@ -116,6 +122,7 @@ if ($data = $mform->get_data()) {
 					error("Could not update trigger item!");
 					redirect($redirecturl);
 			}
+
 		}else{
 			$theitem->id = \local_trigger\webhook\webhooks::add_item($theitem);
 
@@ -123,7 +130,13 @@ if ($data = $mform->get_data()) {
 					error("Could not insert trigger item!");
 					redirect($redirecturl);
 			}
-		}			
+		}
+
+		//reload cache if we need to
+        if($reloadcache){
+            purge_caches([]);
+        }
+
 		//go back to edit quiz page
 		redirect($redirecturl);
 }

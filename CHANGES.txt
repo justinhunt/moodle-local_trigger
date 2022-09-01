@@ -1,5 +1,8 @@
 Change List
 =========
+Version 1.1.06 (Build 2022090100)
+ - added a purge cache if the user is adding a new event to be observed
+
 Version 1.1.05(Build 2022071500)
 - added upgrade to to add table
 - allowed manager to see settings

@@ -64,12 +64,13 @@ class local_trigger_renderer extends plugin_renderer_base {
 		$table->head = array(
 			get_string('event', "local_trigger"),
 			get_string('webhook', "local_trigger"),
-			get_string('description', "local_trigger"),
+            get_string('description', "local_trigger"),
+			get_string('enabled', "local_trigger"),
 			get_string('actions', "local_trigger")
 		);
-		$table->headspan = array(1,1,1,3);
+		$table->headspan = array(1,1,1,1,3);
 		$table->colclasses = array(
-			'eventcol', 'webhookcol', 'descriptioncol', 'edit','preview','delete'
+			'eventcol', 'webhookcol', 'descriptioncol','enabledcol', 'edit','preview','delete'
 		);
 
 		//sort by start date
@@ -82,10 +83,11 @@ class local_trigger_renderer extends plugin_renderer_base {
 		
 			$eventcell = new html_table_cell($item->event);	
 			$webhookcell = new html_table_cell($item->webhook);	
-			$descriptioncell = new html_table_cell($item->description);	
+			$descriptioncell = new html_table_cell($item->description);
+            $enabledcell = $item->enabled ? new html_table_cell(get_string('yes')) : new html_table_cell(get_string('no')) ;
 
-		
-			$actionurl = '/local/trigger/managewebhooks.php';
+
+            $actionurl = '/local/trigger/managewebhooks.php';
 			$editurl = new moodle_url($actionurl, array('itemid'=>$item->id));
 			$editlink = html_writer::link($editurl, get_string('edititem', "local_trigger"));
 			$editcell = new html_table_cell($editlink);
@@ -95,7 +97,7 @@ class local_trigger_renderer extends plugin_renderer_base {
 			$deletecell = new html_table_cell($deletelink);
 
 			$row->cells = array(
-				$eventcell, $webhookcell, $descriptioncell, $editcell, $deletecell
+				$eventcell, $webhookcell, $descriptioncell,$enabledcell, $editcell, $deletecell
 			);
 			$table->data[] = $row;
 		}
