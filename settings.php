@@ -15,12 +15,17 @@ defined('MOODLE_INTERNAL') || die;
 
 
     // Ensure the configurations for this site are set
-    if ($hassiteconfig ) {
+    if ($hassiteconfig || has_capability('local/trigger:canviewsettings', \context_system::instance())) {
 
         // Create the new settings page
         $settings = new admin_settingpage('local_trigger',get_string('triggersettings', 'local_trigger'),'local/trigger:canviewsettings');
         // Create
-        $ADMIN->add('localplugins', $settings );
+        if($ADMIN->locate('localplugins')){
+            $ADMIN->add('localplugins', $settings);
+        }else {
+            $ADMIN->add('modules', new admin_category('localplugins', new lang_string('localplugins')));
+            $ADMIN->add('localplugins', $settings);
+        }
 
         $ADMIN->add('root', new admin_category('trigger', new lang_string('pluginname', 'local_trigger')));
         $ADMIN->add('trigger', new admin_externalpage('trigger/webhooks',
