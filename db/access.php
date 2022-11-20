@@ -31,6 +31,13 @@ $capabilities = array(
                 'archetypes' => array(
                         'manager' => CAP_ALLOW
                 ),
-        )
+        ),
+        'local/trigger:canmanagewebhooks' => array(
+            'captype' => 'write',
+            'contextlevel' => CONTEXT_SYSTEM,
+            'archetypes' => array(
+                'manager' => CAP_ALLOW
+            ),
+        ),
 );
 

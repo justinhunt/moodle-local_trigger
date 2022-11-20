@@ -26,6 +26,7 @@ $string['pluginname'] = 'Trigger';
 $string['triggersettings'] = 'Triggers';
 $string['settingheading'] = 'Trigger: ';
 $string['trigger:canviewsettings'] = 'Trigger: can view settings';
+$string['trigger:canmanagewebhooks'] = 'Trigger: can manage webhooks';
 $string['triggerevent'] = 'Trigger event (Moodle)';
 $string['triggerwebhook'] = 'Trigger webhook (Zapier)';
 $string['triggercount'] = 'Trigger count';

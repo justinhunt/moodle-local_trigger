@@ -1,5 +1,8 @@
 Change List
 =========
+Version 1.1.07 (Build 2022112000)
+ - added a web service to register / deregister urls
+
 Version 1.1.06 (Build 2022090100)
  - added a purge cache if the user is adding a new event to be observed
 

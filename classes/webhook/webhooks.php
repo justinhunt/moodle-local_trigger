@@ -157,7 +157,7 @@ class webhooks
     }
     
     public static function register($authid,$event,$webhook,$enabled){
-    	$item=new stdClass();
+    	$item=new \stdClass();
     	$item->authid=$authid;
     	$item->event=$event;
     	$item->webhook = $webhook;

@@ -138,7 +138,7 @@ if ($data = $mform->get_data()) {
             purge_caches([]);
         }
 
-		//go back to edit quiz page
+		//go back to edit page
 		redirect($redirecturl);
 }
 
