@@ -30,4 +30,5 @@ class constants
 {
 const WEBHOOK_NONE =0;
 const WEBHOOK_TABLE = 'local_trigger_webhooks';
+const SAMPLE_TABLE = 'local_trigger_sample';
 }

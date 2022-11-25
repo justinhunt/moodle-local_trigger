@@ -18,6 +18,8 @@ namespace local_trigger;
 
 defined('MOODLE_INTERNAL') || die();
 
+use \local_trigger\webhook\constants;
+
 /**
  *
  * This is a class containing functions for sending triggers
@@ -90,6 +92,13 @@ class event_trigger
                 //do CURL request
                 try {
                     $return = webhook\webhooks::call_webhook($webhook, $event_data);
+
+                    //save the last data
+                    if($DB->record_exists(constants::SAMPLE_TABLE,array('event'=>$event_data['eventname']))){
+                        $DB->delete_records(constants::SAMPLE_TABLE,array('event'=>$event_data['eventname']));
+                    }
+                    $DB->insert_record(constants::SAMPLE_TABLE,array('event'=>$event_data['eventname'],'eventdata'=>json_encode($event_data)));
+
                 } catch (\Exception $error) {
                     debugging("cURL request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
                 }//end of try catch

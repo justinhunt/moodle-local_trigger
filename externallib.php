@@ -200,5 +200,62 @@ class local_trigger_services extends external_api {
                 ));
     }
 
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function sample_webhook_parameters() {
+        $params = array();
+        $params['event'] = new external_value(PARAM_TEXT, 'event name', VALUE_REQUIRED);
+        return new external_function_parameters(
+            $params
+        );
+    }
+
+    /**
+     * Returns result of action
+     * @return array result of action
+     */
+    public static function sample_webhook($event)
+    {
+        global $USER, $DB;
+
+
+        $rawparams = array();
+        $rawparams['event'] = $event;
+
+        //Parameter validation
+        $params = self::validate_parameters(self::sample_webhook_parameters(),
+            $rawparams);
+
+        //Context validation
+        $context = context_user::instance($USER->id);
+        self::validate_context($context);
+
+        //Capability checking
+        if (!has_capability('local/trigger:canmanagewebhooks', $context)) {
+            throw new moodle_exception('nopermission');
+        }
+
+       $webhook_record = $DB->get_record(constants::SAMPLE_TABLE,array('event'=>$params['event']),'*',IGNORE_MULTIPLE);
+       if($webhook_record){
+           $eventdata =json_decode($webhook_record->eventdata);
+           $ret=[$eventdata];
+       }else{
+           $ret=[];
+       }
+
+        return json_encode($ret);
+    }
+
+
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function sample_webhook_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
 
 }//end of class

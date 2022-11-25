@@ -32,7 +32,6 @@ $functions = array(
         'capabilities'=> 'local/trigger:canmanagewebhooks'
     ),
 
-
     'local_trigger_deregister_webhook' => array(
             'classname'   => 'local_trigger_services',
             'methodname'  => 'deregister_webhook',
@@ -40,6 +39,15 @@ $functions = array(
             'description' => 'Will deregister a webhook',
             'type'        => 'read',
             'capabilities'=> 'local/trigger:canmanagewebhooks'
+    ),
+
+    'local_trigger_sample_webhook' => array(
+        'classname'   => 'local_trigger_services',
+        'methodname'  => 'sample_webhook',
+        'classpath'   => 'local/trigger/externallib.php',
+        'description' => 'Will return a sample event data',
+        'type'        => 'read',
+        'capabilities'=> 'local/trigger:canmanagewebhooks'
     )
 );
 
