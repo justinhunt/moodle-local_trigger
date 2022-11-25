@@ -68,8 +68,24 @@ function xmldb_local_trigger_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-
         upgrade_plugin_savepoint(true, 2022071501, 'local','trigger');
+    }
+
+    //Lets use varchar and not text for trigger db fields
+    if ($oldversion < 2022112400) {
+        $table = new xmldb_table('local_trigger_webhooks');
+        $fields = array(
+            new xmldb_field('authid', XMLDB_TYPE_CHAR, '255'),
+            new xmldb_field('event', XMLDB_TYPE_CHAR, '255'),
+            new xmldb_field('webhook', XMLDB_TYPE_CHAR, '255')
+        );
+        foreach ($fields as $fielddef) {
+            if($dbman->field_exists($table, $fielddef)){
+                $dbman->change_field_type($table, $fielddef);
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2022112400, 'local','trigger');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.
