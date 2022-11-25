@@ -239,7 +239,7 @@ class local_trigger_services extends external_api {
 
        $webhook_record = $DB->get_record(constants::SAMPLE_TABLE,array('event'=>$params['event']),'*',IGNORE_MULTIPLE);
        if($webhook_record){
-           return ['eventdata'=>$webhook_record->eventdata];
+           return ['eventdata'=>json_decode($webhook_record->eventdata)];
        }else{
            return [];
        }
