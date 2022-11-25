@@ -239,7 +239,7 @@ class local_trigger_services extends external_api {
 
        $webhook_record = $DB->get_record(constants::SAMPLE_TABLE,array('event'=>$params['event']),'*',IGNORE_MULTIPLE);
        if($webhook_record){
-           return ['eventdata'=>json_decode($webhook_record->eventdata)];
+           return [$webhook_record->eventdata];
        }else{
            return [];
        }
@@ -252,11 +252,7 @@ class local_trigger_services extends external_api {
      */
     public static function sample_webhook_returns() {
         return new external_multiple_structure(
-            new external_single_structure(
-                array(
-                    'eventdata' => new external_value(PARAM_RAW, 'JSON event data'),
-                )
-            )
+            new external_value(PARAM_RAW, 'JSON event data'),
         );
     }
 
