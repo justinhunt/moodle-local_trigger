@@ -241,7 +241,7 @@ class local_trigger_services extends external_api {
        if($webhook_record){
            return '[' . $webhook_record->eventdata . ']';
 
-       }else{
+       }elseif(false){
            switch($event){
                 //use dummy data
                case '\core\event\user_created':
@@ -276,6 +276,8 @@ class local_trigger_services extends external_api {
                    $eventdata= '{}';
            }
            return '[' . $eventdata . ']';
+       }else{
+           return '[]';
        }
     }
 
