@@ -67,9 +67,21 @@ if ($itemid) {
 //we always head back to the trigger items page
 $redirecturl = new moodle_url('/local/trigger/webhooks.php', array());
 
+    if($action=='sampledata'){
+        $webhook_record = $DB->get_record(\local_trigger\webhook\constants::SAMPLE_TABLE,
+            array('event'=>$item->event),'*',IGNORE_MULTIPLE);
+        if($webhook_record) {
+            echo $webhook_record->eventdata;
+        }else{
+            echo "no sample data for this event";
+        }
+        die;
+    }
+
 	//handle delete actions
     if($action == 'confirmdelete'){
-		$renderer = $PAGE->get_renderer('local_trigger');
+
+        $renderer = $PAGE->get_renderer('local_trigger');
 		echo $renderer->header(get_string('confirmitemdeletetitle', 'local_trigger'),2);
 		echo $renderer->confirm(get_string("confirmitemdelete","local_trigger",$item->event), 
 			new moodle_url('/local/trigger/managewebhooks.php', array('action'=>'delete','itemid'=>$itemid)), 
