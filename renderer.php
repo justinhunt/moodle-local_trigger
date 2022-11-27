@@ -68,7 +68,7 @@ class local_trigger_renderer extends plugin_renderer_base {
 			get_string('enabled', "local_trigger"),
 			get_string('actions', "local_trigger")
 		);
-		$table->headspan = array(1,1,1,1,3);
+		$table->headspan = array(1,1,1,1,2);
 		$table->colclasses = array(
 			'eventcol', 'webhookcol', 'descriptioncol','enabledcol', 'edit','preview','delete'
 		);
@@ -91,18 +91,18 @@ class local_trigger_renderer extends plugin_renderer_base {
 			$editurl = new moodle_url($actionurl, array('itemid'=>$item->id));
 			$editlink = html_writer::link($editurl, get_string('edititem', "local_trigger"));
 			$editcell = new html_table_cell($editlink);
-
+/*
             $actionurl = '/local/trigger/managewebhooks.php';
             $sampleurl = new moodle_url($actionurl, array('itemid'=>$item->id,'action'=>'sampledata'));
             $samplelink = html_writer::link($sampleurl, 'SampleData');
             $samplecell = new html_table_cell($samplelink);
-			
+*/
 			$deleteurl = new moodle_url($actionurl, array('itemid'=>$item->id,'action'=>'confirmdelete'));
 			$deletelink = html_writer::link($deleteurl, get_string('deleteitem', "local_trigger"));
 			$deletecell = new html_table_cell($deletelink);
 
 			$row->cells = array(
-				$eventcell, $webhookcell, $descriptioncell,$enabledcell, $editcell, $deletecell,  $samplecell
+				$eventcell, $webhookcell, $descriptioncell,$enabledcell, $editcell, $deletecell, // $samplecell
 			);
 			$table->data[] = $row;
 		}
