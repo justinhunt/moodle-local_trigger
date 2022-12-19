@@ -30,13 +30,8 @@ use \local_trigger\webhook\constants;
  */
 class event_trigger
 {
-    const LOCAL_TRIGGER_SOMETHING = 0;
-
-    private $trigger_type=0;
-    
-     
     /**
-     * trigger the event
+     * send the triggered event data to the webhook
      *
      *
      */
@@ -94,16 +89,35 @@ class event_trigger
                     $return = webhook\webhooks::call_webhook($webhook, $event_data);
 
                     //save the last data
-                    if($DB->record_exists(constants::SAMPLE_TABLE,array('event'=>$event_data['eventname']))){
-                        $DB->delete_records(constants::SAMPLE_TABLE,array('event'=>$event_data['eventname']));
+                    if(!in_array($event_data['eventname'],constants::SAMPLE_EVENTS)) {
+                        if ($DB->record_exists(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']))) {
+                            $DB->delete_records(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']));
+                        }
+                        $DB->insert_record(constants::SAMPLE_TABLE, array('event' => $event_data['eventname'], 'eventdata' => json_encode($event_data)));
                     }
-                    $DB->insert_record(constants::SAMPLE_TABLE,array('event'=>$event_data['eventname'],'eventdata'=>json_encode($event_data)));
 
                 } catch (\Exception $error) {
                     debugging("cURL request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
                 }//end of try catch
             }//end of if webhook or empty
         }//end of it web hooks
+    }
+
+    /**
+     * Save a sample of this events data so the Zapier has something to work with
+     * We only keep the latest one as a sample.
+     *
+     */
+    public static function sample($event)
+    {
+        global $DB;
+        //get the event data.
+        $event_data = $event->get_data();
+        if ($DB->record_exists(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']))) {
+            $DB->delete_records(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']));
+        }
+        $DB->insert_record(constants::SAMPLE_TABLE, array('event' => $event_data['eventname'], 'eventdata' => json_encode($event_data)));
+
     }
 
 }

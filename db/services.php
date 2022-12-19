@@ -51,3 +51,27 @@ $functions = array(
     )
 );
 
+$services = array(
+    'trigger_automation' => array(
+        'functions' => array(
+            'core_course_get_courses_by_field',
+            'core_enrol_get_enrolled_users',
+            'core_user_create_users',
+            'core_user_delete_users',
+            'core_user_get_users_by_field',
+            'core_user_update_users',
+            'enrol_manual_enrol_users',
+            'enrol_manual_unenrol_users',
+            'local_trigger_deregister_webhook',
+            'local_trigger_register_webhook',
+            'local_trigger_sample_webhook',
+            'core_webservice_get_site_info'
+        ),
+        'requiredcapability' => 'local/trigger:canmanagewebhooks',
+        'enabled' => 1,
+        'restrictedusers' => 0,
+        'downloadfiles' => 0,
+        'uploadfiles' => 0
+    )
+);
+

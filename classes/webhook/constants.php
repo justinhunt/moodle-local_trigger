@@ -31,4 +31,13 @@ class constants
 const WEBHOOK_NONE =0;
 const WEBHOOK_TABLE = 'local_trigger_webhooks';
 const SAMPLE_TABLE = 'local_trigger_sample';
+const SAMPLE_EVENTS=['\core\event\user_created',
+    '\core\event\user_updated',
+    '\core\event\user_enrolment_created',
+    '\mod_quiz\event\attempt_submitted',
+    '\core\event\course_completed',
+    '\core\event\user_enrolment_deleted',
+    '\block_xp\event\user_leveledup',
+    '\core\event\user_updated'
+];
 }

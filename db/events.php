@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use \local_trigger\webhook\constants;
+
 $config = get_config('local_trigger');
 $observers = array();
 $added = array();
@@ -42,5 +44,15 @@ if($webhooks) {
                 'internal' => false
             );
         }
+    }
+}
+//These webhooks are to fetch sample data for creating zaps
+foreach(constants::SAMPLE_EVENTS as $sample_event){
+    if(class_exists($sample_event)) {
+        $observers[] = array(
+            'eventname' => $sample_event,
+            'callback' => '\local_trigger\event_trigger::sample',
+            'internal' => false
+        );
     }
 }

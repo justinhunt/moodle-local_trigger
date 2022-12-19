@@ -128,20 +128,15 @@ if ($data = $mform->get_data()) {
         if(count($eventhooks)==0){$reloadcache=true;}
 		
 		//first insert a new item if we need to
-		//that will give us a itemid, we need that for saving files
 		if($edit){
-			//now update the db once we have saved files and stuff
+			//now update the db
 			if (!\local_trigger\webhook\webhooks::update_item($theitem)){
-					error("Could not update trigger item!");
-					redirect($redirecturl);
+					redirect($redirecturl,"Could not update trigger item!");
 			}
-
 		}else{
 			$theitem->id = \local_trigger\webhook\webhooks::add_item($theitem);
-
 			if (!$theitem->id){
-					error("Could not insert trigger item!");
-					redirect($redirecturl);
+					redirect($redirecturl,"Could not insert trigger item!");
 			}
 		}
 

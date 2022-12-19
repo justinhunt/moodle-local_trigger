@@ -1,5 +1,9 @@
 Change List
 =========
+Version 1.110 (Build 2022122000)
+ - added pre built web service
+ - added better sample data
+
 Version 1.109 (Build 2022112500)
  - added sample data
 
