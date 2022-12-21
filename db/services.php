@@ -52,8 +52,10 @@ $functions = array(
 );
 
 $services = array(
-    'trigger_automation' => array(
+    'poodll_trigger' => array(
         'functions' => array(
+            'core_cohort_add_cohort_members',
+            'core_cohort_delete_cohort_members',
             'core_course_get_courses_by_field',
             'core_enrol_get_enrolled_users',
             'core_user_create_users',
