@@ -405,6 +405,20 @@ class local_trigger_services extends external_api {
     }
 
     /**
+     * Returns description of method result value
+     *
+     * @return null
+     * @since Moodle 2.5
+     */
+    public static function remove_cohort_members_returns() {
+        return new external_single_structure(
+            array(
+                'warnings' => new external_warnings()
+            )
+        );
+    }
+
+    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
@@ -518,6 +532,20 @@ class local_trigger_services extends external_api {
         $result = array();
         $result['warnings'] = $warnings;
         return $result;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return null
+     * @since Moodle 2.5
+     */
+    public static function add_cohort_members_returns() {
+        return new external_single_structure(
+            array(
+                'warnings' => new external_warnings()
+            )
+        );
     }
 
 
