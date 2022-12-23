@@ -48,11 +48,29 @@ $functions = array(
         'description' => 'Will return a sample event data',
         'type'        => 'read',
         'capabilities'=> 'local/trigger:canmanagewebhooks'
+    ),
+
+    'local_trigger_add_cohort_members' => array(
+        'classname'   => 'local_trigger_services',
+        'methodname'  => 'add_cohort_members',
+        'classpath'   => 'local/trigger/externallib.php',
+        'description' => 'Will add a user to a cohort',
+        'type'        => 'write',
+        'capabilities'=> 'local/trigger:canmanagewebhooks'
+    ),
+
+    'local_trigger_remove_cohort_members' => array(
+        'classname'   => 'local_trigger_services',
+        'methodname'  => 'remove_cohort_members',
+        'classpath'   => 'local/trigger/externallib.php',
+        'description' => 'Will remove a user from a cohort',
+        'type'        => 'write',
+        'capabilities'=> 'local/trigger:canmanagewebhooks'
     )
 );
 
 $services = array(
-    'poodll_trigger' => array(
+    'Poodll Trigger' => array(
         'functions' => array(
             'local_trigger_add_cohort_members',
             'local_trigger_remove_cohort_members',
