@@ -288,5 +288,237 @@ class local_trigger_services extends external_api {
         return    new external_value(PARAM_RAW, 'JSON event data');
     }
 
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 2.5
+     */
+    public static function remove_cohort_members_parameters() {
+        return new external_function_parameters (
+            array(
+                'members' => new external_multiple_structure (
+                    new external_single_structure (
+                        array (
+                            'cohorttype' => new external_single_structure (
+                                array(
+                                    'type' => new external_value(PARAM_ALPHANUMEXT, 'The name of the field: id
+                                        (numeric value of cohortid) or idnumber (alphanumeric value of idnumber) '),
+                                    'value' => new external_value(PARAM_RAW, 'The value of the cohort')
+                                )
+                            ),
+                            'usertype' => new external_single_structure (
+                                array(
+                                    'type' => new external_value(PARAM_ALPHANUMEXT, 'The name of the field: id
+                                        (numeric value of id) or username (alphanumeric value of username) '),
+                                    'value' => new external_value(PARAM_RAW, 'The value of the cohort')
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        );
+    }
+
+    /**
+     * Add cohort members
+     *
+     * @param array $members of arrays with keys userid, cohortid
+     * @since Moodle 2.5
+     */
+    public static function remove_cohort_members($members) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot."/cohort/lib.php");
+
+        $params = self::validate_parameters(self::remove_cohort_members_parameters(), array('members' => $members));
+
+        $transaction = $DB->start_delegated_transaction();
+        $warnings = array();
+        foreach ($params['members'] as $member) {
+            // Cohort parameters.
+            $cohorttype = $member['cohorttype'];
+            $cohortparam = array($cohorttype['type'] => $cohorttype['value']);
+            // User parameters.
+            $usertype = $member['usertype'];
+            $userparam = array($usertype['type'] => $usertype['value']);
+            try {
+                // Check parameters.
+                if ($cohorttype['type'] != 'id' && $cohorttype['type'] != 'idnumber') {
+                    $warning = array();
+                    $warning['warningcode'] = '1';
+                    $warning['message'] = 'invalid parameter: cohortype='.$cohorttype['type'];
+                    $warnings[] = $warning;
+                    continue;
+                }
+                if ($usertype['type'] != 'id' && $usertype['type'] != 'username') {
+                    $warning = array();
+                    $warning['warningcode'] = '1';
+                    $warning['message'] = 'invalid parameter: usertype='.$usertype['type'];
+                    $warnings[] = $warning;
+                    continue;
+                }
+                // Extract parameters.
+                if (!$cohortid = $DB->get_field('cohort', 'id', $cohortparam)) {
+                    $warning = array();
+                    $warning['warningcode'] = '2';
+                    $warning['message'] = 'cohort '.$cohorttype['type'].'='.$cohorttype['value'].' not exists';
+                    $warnings[] = $warning;
+                    continue;
+                }
+                if (!$userid = $DB->get_field('user', 'id', array_merge($userparam, array('deleted' => 0,
+                    'mnethostid' => $CFG->mnet_localhost_id)))) {
+                    $warning = array();
+                    $warning['warningcode'] = '2';
+                    $warning['message'] = 'user '.$usertype['type'].'='.$usertype['value'].' not exists';
+                    $warnings[] = $warning;
+                    continue;
+                }
+
+                $cohort = $DB->get_record('cohort', array('id'=>$cohortid), '*', MUST_EXIST);
+                $context = context::instance_by_id($cohort->contextid, MUST_EXIST);
+                if ($context->contextlevel != CONTEXT_COURSECAT and $context->contextlevel != CONTEXT_SYSTEM) {
+                    $warning = array();
+                    $warning['warningcode'] = '1';
+                    $warning['message'] = 'Invalid context: '.$context->contextlevel;
+                    $warnings[] = $warning;
+                    continue;
+                }
+                self::validate_context($context);
+            } catch (Exception $e) {
+                throw new moodle_exception('Error', 'cohort', '', $e->getMessage());
+            }
+            if (!has_any_capability(array('moodle/cohort:manage', 'moodle/cohort:assign'), $context)) {
+                throw new required_capability_exception($context, 'moodle/cohort:assign', 'nopermissions', '');
+            }
+
+            if ($DB->record_exists('cohort_members', array('cohortid' => $cohortid, 'userid' => $userid))) {
+                cohort_remove_member($cohortid, $userid);
+            }
+
+        }
+        $transaction->allow_commit();
+        // Return.
+        $result = array();
+        $result['warnings'] = $warnings;
+        return $result;
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 2.5
+     */
+    public static function add_cohort_members_parameters() {
+        return new external_function_parameters (
+            array(
+                'members' => new external_multiple_structure (
+                    new external_single_structure (
+                        array (
+                            'cohorttype' => new external_single_structure (
+                                array(
+                                    'type' => new external_value(PARAM_ALPHANUMEXT, 'The name of the field: id
+                                        (numeric value of cohortid) or idnumber (alphanumeric value of idnumber) '),
+                                    'value' => new external_value(PARAM_RAW, 'The value of the cohort')
+                                )
+                            ),
+                            'usertype' => new external_single_structure (
+                                array(
+                                    'type' => new external_value(PARAM_ALPHANUMEXT, 'The name of the field: id
+                                        (numeric value of id) or username (alphanumeric value of username) '),
+                                    'value' => new external_value(PARAM_RAW, 'The value of the cohort')
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        );
+    }
+
+    /**
+     * Add cohort members
+     *
+     * @param array $members of arrays with keys userid, cohortid
+     * @since Moodle 2.5
+     */
+    public static function add_cohort_members($members) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot."/cohort/lib.php");
+
+        $params = self::validate_parameters(self::add_cohort_members_parameters(), array('members' => $members));
+
+        $transaction = $DB->start_delegated_transaction();
+        $warnings = array();
+        foreach ($params['members'] as $member) {
+            // Cohort parameters.
+            $cohorttype = $member['cohorttype'];
+            $cohortparam = array($cohorttype['type'] => $cohorttype['value']);
+            // User parameters.
+            $usertype = $member['usertype'];
+            $userparam = array($usertype['type'] => $usertype['value']);
+            try {
+                // Check parameters.
+                if ($cohorttype['type'] != 'id' && $cohorttype['type'] != 'idnumber') {
+                    $warning = array();
+                    $warning['warningcode'] = '1';
+                    $warning['message'] = 'invalid parameter: cohortype='.$cohorttype['type'];
+                    $warnings[] = $warning;
+                    continue;
+                }
+                if ($usertype['type'] != 'id' && $usertype['type'] != 'username') {
+                    $warning = array();
+                    $warning['warningcode'] = '1';
+                    $warning['message'] = 'invalid parameter: usertype='.$usertype['type'];
+                    $warnings[] = $warning;
+                    continue;
+                }
+                // Extract parameters.
+                if (!$cohortid = $DB->get_field('cohort', 'id', $cohortparam)) {
+                    $warning = array();
+                    $warning['warningcode'] = '2';
+                    $warning['message'] = 'cohort '.$cohorttype['type'].'='.$cohorttype['value'].' not exists';
+                    $warnings[] = $warning;
+                    continue;
+                }
+                if (!$userid = $DB->get_field('user', 'id', array_merge($userparam, array('deleted' => 0,
+                    'mnethostid' => $CFG->mnet_localhost_id)))) {
+                    $warning = array();
+                    $warning['warningcode'] = '2';
+                    $warning['message'] = 'user '.$usertype['type'].'='.$usertype['value'].' not exists';
+                    $warnings[] = $warning;
+                    continue;
+                }
+
+                $cohort = $DB->get_record('cohort', array('id'=>$cohortid), '*', MUST_EXIST);
+                $context = context::instance_by_id($cohort->contextid, MUST_EXIST);
+                if ($context->contextlevel != CONTEXT_COURSECAT and $context->contextlevel != CONTEXT_SYSTEM) {
+                    $warning = array();
+                    $warning['warningcode'] = '1';
+                    $warning['message'] = 'Invalid context: '.$context->contextlevel;
+                    $warnings[] = $warning;
+                    continue;
+                }
+                self::validate_context($context);
+            } catch (Exception $e) {
+                throw new moodle_exception('Error', 'cohort', '', $e->getMessage());
+            }
+            if (!has_any_capability(array('moodle/cohort:manage', 'moodle/cohort:assign'), $context)) {
+                throw new required_capability_exception($context, 'moodle/cohort:assign', 'nopermissions', '');
+            }
+            //only add if they are not already in the cohort
+            if (!$DB->record_exists('cohort_members', array('cohortid' => $cohortid, 'userid' => $userid))) {
+                cohort_add_member($cohortid, $userid);
+            }
+
+        }
+        $transaction->allow_commit();
+        // Return.
+        $result = array();
+        $result['warnings'] = $warnings;
+        return $result;
+    }
+
 
 }//end of class

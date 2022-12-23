@@ -54,8 +54,8 @@ $functions = array(
 $services = array(
     'poodll_trigger' => array(
         'functions' => array(
-            'core_cohort_add_cohort_members',
-            'core_cohort_delete_cohort_members',
+            'local_trigger_add_cohort_members',
+            'local_trigger_remove_cohort_members',
             'core_course_get_courses_by_field',
             'core_enrol_get_enrolled_users',
             'core_user_create_users',
@@ -71,7 +71,7 @@ $services = array(
         ),
         'requiredcapability' => 'local/trigger:canmanagewebhooks',
         'enabled' => 1,
-        'restrictedusers' => 0,
+        'restrictedusers' => 1,
         'downloadfiles' => 0,
         'uploadfiles' => 0
     )
