@@ -74,10 +74,12 @@ $services = array(
         'functions' => array(
             'local_trigger_add_cohort_members',
             'local_trigger_remove_cohort_members',
+            'core_course_get_courses',
             'core_course_get_courses_by_field',
             'core_enrol_get_enrolled_users',
             'core_user_create_users',
             'core_user_delete_users',
+            'core_user_get_users',
             'core_user_get_users_by_field',
             'core_user_update_users',
             'enrol_manual_enrol_users',
