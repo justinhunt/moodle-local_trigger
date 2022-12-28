@@ -91,7 +91,7 @@ class event_trigger
                     //save the last data
                     if(!in_array($event_data['eventname'],constants::SAMPLE_EVENTS)) {
                         if ($DB->record_exists_select(constants::SAMPLE_TABLE, sprintf("%s = :event", $DB->sql_compare_text('event')), array('event' => $event_data['eventname']))) {
-                            $DB->delete_records(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']));
+                            $DB->delete_records_select(constants::SAMPLE_TABLE, sprintf("%s = :event", $DB->sql_compare_text('event')), array('event' => $event_data['eventname']));
                         }
                         $DB->insert_record(constants::SAMPLE_TABLE, array('event' => $event_data['eventname'], 'eventdata' => json_encode($event_data)));
                     }
@@ -114,7 +114,7 @@ class event_trigger
         //get the event data.
         $event_data = $event->get_data();
         if ($DB->record_exists_select(constants::SAMPLE_TABLE, sprintf("%s = :event", $DB->sql_compare_text('event')), array('event' => $event_data['eventname']))) {
-            $DB->delete_records(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']));
+            $DB->delete_records_select(constants::SAMPLE_TABLE, sprintf("%s = :event", $DB->sql_compare_text('event')), array('event' => $event_data['eventname']));
         }
         $DB->insert_record(constants::SAMPLE_TABLE, array('event' => $event_data['eventname'], 'eventdata' => json_encode($event_data)));
 
