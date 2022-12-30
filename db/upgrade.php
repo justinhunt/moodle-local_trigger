@@ -91,22 +91,38 @@ function xmldb_local_trigger_upgrade($oldversion) {
     if ($oldversion < 2022112500) {
         $table = new xmldb_table('local_trigger_sample');
 
-        // Adding fields to table tool_dataprivacy_contextlist.
+        // Adding fields to table
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('event', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
         $table->add_field('eventdata', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null);
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
 
-        // Adding keys to table tool_dataprivacy_contextlist.
+        // Adding keys to table
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 
-        // Conditionally launch create table for tool_dataprivacy_contextlist.
+        // Conditionally launch create table.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
 
         upgrade_plugin_savepoint(true, 2022112500, 'local','trigger');
+    }
+
+    if ($oldversion < 2022122800) {
+        //The update.php created local_trigger_sample - "event" field as char(255) field type but install.xml created as text field type.
+        //This update will change the text type event fields, to char 255. If its already char(255) it will do nothing.
+        $table = new xmldb_table('local_trigger_sample');
+        $field = new xmldb_field('event', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
+
+        //The field, in reality, will already exist in either form, but let's just be safe and check first
+        if ( $dbman->field_exists($table, $field)) {
+            $dbman->change_field_type($table, $field);
+        }else{
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2022122800, 'local','trigger');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.

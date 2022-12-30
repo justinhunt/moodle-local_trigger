@@ -1,6 +1,9 @@
 Change List
 =========
+ 1.1.12 (Build 2022122800)
+ - fixed bad db table col type (text) on new install.
 -added core_course_get_courses and core_user_get_users
+
 Version 1.110 (Build 2022122300)
  - added pre built web service
  - added better sample data
