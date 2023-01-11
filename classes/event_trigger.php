@@ -50,36 +50,7 @@ class event_trigger
             if ($webhook && !empty($webhook)) {
                 //do DB stuff, probably most triggers will need user or course data
                 try {
-                    //user data
-                    $userid=false;
-                    if(array_key_exists('relateduserid', $event_data)){
-                        $userid = $event_data['relateduserid'];
-                        $event_data['userid'] = $userid;
-                    }elseif(array_key_exists('userid', $event_data)){
-                        $userid = $event_data['userid'];
-                    }
-                    if ($userid) {
-                        $user = $DB->get_record('user', array('id' => $userid));
-                        if ($user) {
-                            unset($user->password);
-                            //profile fields
-                            $profileprops = get_object_vars(profile_user_record($user->id));
-                            if($profileprops){
-                                foreach($profileprops as $key=>$value){
-                                    $user->{'upf_' . $key}=$value;
-                                }
-                            }
-
-                            $event_data['user'] = $user;
-                        }
-                    }
-                    //course data
-                    if (array_key_exists('courseid', $event_data)) {
-                        $course = $DB->get_record('course', array('id' => $event_data['courseid']));
-                        if ($course) {
-                            $event_data['course'] = $course;
-                        }
-                    }
+                    $event_data = self::expand_event($event_data);
                 } catch (\Exception $error) {
                     debugging("fetching user/course data error for trigger request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
                 }
@@ -103,6 +74,42 @@ class event_trigger
         }//end of it web hooks
     }
 
+    public static function expand_event($event_data){
+        global $DB;
+
+        //user data
+        $userid=false;
+        if(array_key_exists('relateduserid', $event_data)){
+            $userid = $event_data['relateduserid'];
+            $event_data['userid'] = $userid;
+        }elseif(array_key_exists('userid', $event_data)){
+            $userid = $event_data['userid'];
+        }
+        if ($userid) {
+            $user = $DB->get_record('user', array('id' => $userid));
+            if ($user) {
+                unset($user->password);
+                //profile fields
+                $profileprops = get_object_vars(profile_user_record($user->id));
+                if($profileprops){
+                    foreach($profileprops as $key=>$value){
+                        $user->{'upf_' . $key}=$value;
+                    }
+                }
+
+                $event_data['user'] = $user;
+            }
+        }
+        //course data
+        if (array_key_exists('courseid', $event_data)) {
+            $course = $DB->get_record('course', array('id' => $event_data['courseid']));
+            if ($course) {
+                $event_data['course'] = $course;
+            }
+        }
+        return $event_data;
+    }
+
     /**
      * Save a sample of this events data so the Zapier has something to work with
      * We only keep the latest one as a sample.
@@ -113,11 +120,18 @@ class event_trigger
         global $DB;
         //get the event data.
         $event_data = $event->get_data();
+        $eventname = $event_data['eventname'];
+        //do DB stuff, probably most triggers will need user or course data
+        try {
+            $event_data = self::expand_event($event_data);
+        } catch (\Exception $error) {
+            debugging("fetching user/course data error for trigger request for \"$eventname\" failed with error: " . $error->getMessage(), DEBUG_ALL);
+        }
+
         if ($DB->record_exists(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']))) {
             $DB->delete_records(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']));
         }
         $DB->insert_record(constants::SAMPLE_TABLE, array('event' => $event_data['eventname'], 'eventdata' => json_encode($event_data)));
-
     }
 
 }
