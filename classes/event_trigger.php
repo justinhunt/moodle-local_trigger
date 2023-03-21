@@ -77,6 +77,8 @@ class event_trigger
     public static function expand_event($event_data){
         global $DB;
 
+        require_once($CFG->dirroot . '/user/profile/lib.php');
+
         //user data
         $userid=false;
         if(array_key_exists('relateduserid', $event_data)){
