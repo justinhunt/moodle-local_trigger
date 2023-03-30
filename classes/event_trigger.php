@@ -75,7 +75,7 @@ class event_trigger
     }
 
     public static function expand_event($event_data){
-        global $DB;
+        global $DB, $CFG;
 
         require_once($CFG->dirroot . '/user/profile/lib.php');
 
