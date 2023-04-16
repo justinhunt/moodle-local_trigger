@@ -102,6 +102,21 @@ class webhooks
         }
         return $webhooks;
     }
+
+    public static function fetch_full_webhooks($eventname=false,$enabled=true){
+        global $DB;
+        $webhooks = array();
+
+        if($eventname) {
+            $records = $DB->get_records_select(constants::WEBHOOK_TABLE,
+                $DB->sql_compare_text('event') . ' = ? AND enabled = ?',
+                array( $eventname,$enabled));
+        }else{
+            $records = $DB->get_records(constants::WEBHOOK_TABLE);
+        }
+
+        return $records;
+    }
     
     public static function call_webhook($webhook, $event_data){
        global $CFG;

@@ -16,9 +16,10 @@
 
 namespace local_trigger;
 
+use \local_trigger\webhook\constants;
+
 defined('MOODLE_INTERNAL') || die();
 
-use \local_trigger\webhook\constants;
 
 /**
  *
@@ -44,9 +45,11 @@ class event_trigger
         $event_data = $event->get_data();
 
         //fetch the registered webhooks for that event. We should have one and sometimes more!!
-        $webhooks =  webhook\webhooks::fetch_webhooks($event_data['eventname']);
+        $webhooks_records =  webhook\webhooks::fetch_full_webhooks($event_data['eventname']);
 
-        foreach($webhooks as $webhook) {
+
+        foreach($webhooks_records as $webhook_record) {
+            $webhook=$webhook_record->webhook;
             if ($webhook && !empty($webhook)) {
                 //do DB stuff, probably most triggers will need user or course data
                 try {
@@ -66,6 +69,9 @@ class event_trigger
                         }
                         $DB->insert_record(constants::SAMPLE_TABLE, array('event' => $event_data['eventname'], 'eventdata' => json_encode($event_data)));
                     }
+                    //trigger our own event to confirm the hooks was sent
+                    \local_trigger\event\webhook_called::create_event($webhook_record, $event_data)->trigger();
+
 
                 } catch (\Exception $error) {
                     debugging("cURL request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);

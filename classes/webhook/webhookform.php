@@ -67,7 +67,10 @@ class webhookform extends \moodleform {
 
         $eventarray = \report_eventlist_list_generator::get_all_events_list(false);
         foreach ($eventarray as $key=>$value){
-            $eventarray[$key]=$key;
+            //add all but our own event
+          //  if(strpos($key,'webhook_called')===false) {
+                $eventarray[$key] = $key;
+          //  }
         }
         $mform->addElement('select', 'event', get_string('event', 'local_trigger'), $eventarray);
         //$mform->addElement('text', 'event', get_string('event', 'local_trigger'), array('size'=>70));

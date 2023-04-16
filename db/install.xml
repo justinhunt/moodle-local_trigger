@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8" ?>
 <XMLDB PATH="local/trigger/db" VERSION="20150108" COMMENT="XMLDB file for Moodle local/trigger"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
