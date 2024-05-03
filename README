@@ -2,7 +2,7 @@ Broadcast Moodle events to pre-registered webhooks
 ------------------------------------------
 
 This has been designed for use with Zapier but could be used in other situations too.
-It has been tested on Moodle 3.1 but should probably work in Moodle 2.7 or greater.
+
 
 Installation
 --------------
