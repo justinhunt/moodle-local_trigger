@@ -48,7 +48,7 @@ function xmldb_local_trigger_upgrade($oldversion) {
     if ($oldversion < 2022071501) {
         $table = new xmldb_table('local_trigger_webhooks');
 
-        // Adding fields to table tool_dataprivacy_contextlist.
+        // Adding fields to table local_trigger_webhooks.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('authid', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null);
         $table->add_field('event', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null);
@@ -60,10 +60,10 @@ function xmldb_local_trigger_upgrade($oldversion) {
         $table->add_field('createdby', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
         $table->add_field('modifiedby', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
 
-        // Adding keys to table tool_dataprivacy_contextlist.
+        // Adding keys to table local_trigger_webhooks
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 
-        // Conditionally launch create table for tool_dataprivacy_contextlist.
+        // Conditionally launch create table for local_trigger_webhooks
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
@@ -123,6 +123,32 @@ function xmldb_local_trigger_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2022122800, 'local','trigger');
+    }
+
+    if ($oldversion < 2024052600) {
+        $table = new xmldb_table('local_trigger_actions');
+
+        // Adding fields to table local_trigger_actions.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('action', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL, null);
+        $table->add_field('protocol', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL, null);
+        $table->add_field('params', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null);
+        $table->add_field('description', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null);
+        $table->add_field('enabled', XMLDB_TYPE_INTEGER, '2', null, null, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+        $table->add_field('createdby', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+        $table->add_field('modifiedby', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+
+        // Adding keys to table local_trigger_actions
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for local_trigger_actions.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2024052600, 'local','trigger');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.

@@ -44,7 +44,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @copyright  2014 Justin Hunt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class webhookform extends \moodleform {
+class customactionform extends \moodleform {
 
 
     /**
@@ -56,7 +56,7 @@ class webhookform extends \moodleform {
     public final function definition() {
         $mform = $this->_form;
 	
-        $mform->addElement('header', 'typeheading', get_string('createawebhookitem', 'local_trigger'));
+        $mform->addElement('header', 'typeheading', get_string('createacustomactionitem', 'local_trigger'));
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
@@ -64,29 +64,41 @@ class webhookform extends \moodleform {
         $mform->addElement('hidden', 'itemid');
         $mform->setType('itemid', PARAM_INT);
 
+        //Get all the possible actions
+        $actionarray = customactions::get_all_possible_actions();
+        $mform->addElement('select', 'action', get_string('customaction', 'local_trigger'),$actionarray,['class'=>'local_trigger_ca_selectbox'] );
+		$mform->addRule('action', get_string('required'), 'required', null, 'client');
 
-        $eventarray = \report_eventlist_list_generator::get_all_events_list(false);
-        foreach ($eventarray as $key=>$value){
-            //add all but our own event
-          //  if(strpos($key,'webhook_called')===false) {
-                $eventarray[$key] = $key;
-          //  }
+        //get a description of the action
+        $mform->addElement('text', 'description', get_string('description', 'local_trigger'), array('size'=>70));
+        $mform->setType('description', PARAM_TEXT);
+        $mform->setDefault('description', '');
+
+        //get the protocol of the action, PUT, POST, GET etc
+        //$mform->addElement('select', 'protocol', get_string('protocol', 'local_trigger'), constants::PROTOCOLS);
+        //$mform->addRule('action', get_string('required'), 'required', null, 'client');
+        $mform->addElement('hidden', 'protocol', get_string('protocol', 'local_trigger'));
+        $mform->setType('protocol', PARAM_TEXT);
+        $mform->setDefault('protocol', 'post');
+
+        //custom int fields
+        /*
+        $fields_int=['customint1','customint2','customint3','customint4','customint5'];
+        foreach($fields_int as $field){
+            $mform->addElement('text', $field, get_string($field, 'local_trigger'), array('size'=>10, 'class'=>'local_trigger_' . $field));
+            $mform->setType($field, PARAM_INT);
         }
-        $mform->addElement('select', 'event', get_string('event', 'local_trigger'), $eventarray);
-        //$mform->addElement('text', 'event', get_string('event', 'local_trigger'), array('size'=>70));
-		//$mform->setType('event', PARAM_TEXT);
-		$mform->addRule('event', get_string('required'), 'required', null, 'client');
-		
-		$mform->addElement('text', 'webhook', get_string('webhook', 'local_trigger'), array('size'=>70));
-		$mform->setType('webhook', PARAM_URL);
-		$mform->addRule('webhook', get_string('required'), 'required', null, 'client');
-		
-		$mform->addElement('text', 'description', get_string('description', 'local_trigger'), array('size'=>70));
-		$mform->setType('description', PARAM_TEXT);
-		$mform->setDefault('description', '');
+        */
+
+        //custom text fields
+        $fields_text=['customtext1','customtext2','customtext3','customtext4','customtext5','customtext6','customtext7','customtext8','customtext9','customtext10'];
+        foreach($fields_text as $field){
+            $mform->addElement('text', $field, get_string($field, 'local_trigger'), array('size'=>70, 'class'=>'local_trigger_' . $field));
+            $mform->setType($field, PARAM_TEXT);
+            $mform->addElement('static',$field .'_label','', '<div id="'.$field.'_label" class="local_trigger_customtext_label"></div>');
+        }
 
 		$mform->addElement('selectyesno', 'enabled', get_string('enabled', 'local_trigger'));
-
 
 		//add the action buttons
         $this->add_action_buttons(get_string('cancel'), get_string('saveitem', 'local_trigger'));

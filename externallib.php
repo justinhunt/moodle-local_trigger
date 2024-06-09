@@ -548,5 +548,197 @@ class local_trigger_services extends external_api {
         );
     }
 
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 2.5
+     */
+    public static function custom_action_parameters() {
+        $params = array();
+        $params['action'] = new external_value(PARAM_TEXT, 'The action\'s full event name, eg core_user_create_users ', VALUE_REQUIRED);
+        $params['customtext1'] = new external_value(PARAM_TEXT, 'The custom text(1) value', VALUE_DEFAULT, '');
+        $params['customtext2'] = new external_value(PARAM_TEXT, 'The custom text(1) value', VALUE_DEFAULT, '');
+        $params['customtext3'] = new external_value(PARAM_TEXT, 'The custom text(1) value', VALUE_DEFAULT, '');
+        $params['customint1'] = new external_value(PARAM_INT, 'The custom integer(1) value', VALUE_DEFAULT, -1);
+        $params['customint2'] = new external_value(PARAM_INT, 'The custom integer(2) value', VALUE_DEFAULT, -1);
+        $params['customint3'] = new external_value(PARAM_INT, 'The custom integer(3) value', VALUE_DEFAULT, -1);
+        return new external_function_parameters(
+            $params
+        );
 
+    }
+
+    /**
+     * Local trigger custom action
+     *
+     * @param array $members of arrays with keys userid, cohortid
+     * @since Moodle 2.5
+     */
+    public static function custom_action($action, $customtext1, $customtext2, $customtext3, $customint1, $customint2, $customint3) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot."/cohort/lib.php");
+
+        $params = self::validate_parameters(self::custom_action_parameters(), array('action' => $action,
+            'customtext1' => $customtext1, 'customtext2' => $customtext2, 'customtext3' => $customtext3,
+            'customint1' => $customint1, 'customint2' => $customint2, 'customint3' => $customint3));
+
+        $transaction = $DB->start_delegated_transaction();
+        $warnings = array();
+        foreach ($params as $param) {
+            // Action parameters.
+            //check action is valid
+
+            try {
+                /*
+                $cohort = $DB->get_record('cohort', array('id'=>$cohortid), '*', MUST_EXIST);
+                $context = context::instance_by_id($cohort->contextid, MUST_EXIST);
+                if ($context->contextlevel != CONTEXT_COURSECAT and $context->contextlevel != CONTEXT_SYSTEM) {
+                    $warning = array();
+                    $warning['warningcode'] = '1';
+                    $warning['message'] = 'Invalid context: '.$context->contextlevel;
+                    $warnings[] = $warning;
+                    continue;
+                }
+                self::validate_context($context);
+                */
+
+            } catch (Exception $e) {
+                throw new moodle_exception('Error', 'cohort', '', $e->getMessage());
+            }
+            /*
+            if (!has_any_capability(array('moodle/cohort:manage', 'moodle/cohort:assign'), $context)) {
+                throw new required_capability_exception($context, 'moodle/cohort:assign', 'nopermissions', '');
+            }
+            */
+            //Call the web service action
+            $params = array(
+                'customtext1' => $customtext1,
+                'customtext2' => $customtext2,
+                'customtext3' => $customtext3,
+                'customint1' => $customint1,
+                'customint2' => $customint2,
+                'customint3' => $customint3
+            );
+
+
+        }
+        $transaction->allow_commit();
+        // Return.
+        $result = array();
+        $result['warnings'] = $warnings;
+        return $result;
+    }
+
+
+    /**
+     * Returns description of method result value
+     *
+     * @return null
+     * @since Moodle 2.5
+     */
+    public static function custom_action_returns() {
+        return new external_single_structure(
+            array(
+                'warnings' => new external_warnings()
+            )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 2.5
+     */
+    public static function fetch_function_details_parameters() {
+        $params = array();
+        $params['functionname'] = new external_value(PARAM_TEXT, 'The function\'s name, eg mod_chat_send_chat_message ', VALUE_REQUIRED);
+        return new external_function_parameters(
+            $params
+        );
+
+    }
+    public static function fetch_function_details($functionname){
+        global $DB;
+        // Skip invalid or otherwise incorrectly defined functions.
+        try {
+            $function=$DB->get_record('external_functions', array('name'=>$functionname));
+            $details = \external_api::external_function_info($function);
+        } catch (\Throwable $exception) {
+            $details = ['error'=>$exception->getMessage()];
+        }
+        return json_encode($details);
+    }
+
+    public static function fetch_function_details_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 2.5
+     */
+    public static function get_customactions_parameters() {
+        $params = array();
+        return new external_function_parameters(
+            $params
+        );
+
+    }
+    public static function get_customactions(){
+        global $DB;
+        // Skip invalid or otherwise incorrectly defined functions.
+        try {
+            $customactions=$DB->get_records_menu(constants::ACTION_TABLE, array('enabled'=>1));
+            if(!$customactions){
+                $customactions = [];
+            }
+        } catch (\Throwable $exception) {
+            //$customactions = ['error'=>$exception->getMessage()];
+            $customactions = [];
+        }
+        return json_encode($customactions);
+    }
+
+    public static function get_customactions_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 2.5
+     */
+    public static function get_customaction_details_parameters() {
+        $params = array();
+        $params['customactionid'] = new external_value(PARAM_INT, 'The custom action id', VALUE_REQUIRED);
+        return new external_function_parameters(
+            $params
+        );
+
+    }
+    public static function get_customaction_details($customactionid){
+        global $DB;
+        // Skip invalid or otherwise incorrectly defined functions.
+        try {
+            $action=$DB->get_record(constants::ACTION_TABLE, array('id'=>$customactionid));
+            if($action) {
+                $params = $action->params;
+            }else{
+                $params = [];
+            }
+        } catch (\Throwable $exception) {
+            //$params = ['error'=>$exception->getMessage()];
+            $params = [];
+        }
+        return json_encode($params);
+    }
+
+    public static function get_customaction_details_returns() {
+        return new external_value(PARAM_RAW);
+    }
 }//end of class

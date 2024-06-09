@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Action for adding/editing a webhook. 
+ * Action for adding/editing a custom action
  *
  * @package mod_trigger
  * @copyright  2014 Justin Hunt
@@ -30,9 +30,9 @@ $context = context_system::instance();
 
 /// Set up the page header
 $PAGE->set_context($context);
-$PAGE->set_url('/local/trigger/managewebhooks.php');
-$PAGE->set_title(get_string('managewebhooks','local_trigger'));
-$PAGE->set_heading(get_string('managewebhooks','local_trigger'));
+$PAGE->set_url('/local/trigger/managecustomactions.php');
+$PAGE->set_title(get_string('managecustomactions','local_trigger'));
+$PAGE->set_heading(get_string('managecustomactions','local_trigger'));
 $PAGE->set_pagelayout('admin');
 
 require_login();
@@ -44,18 +44,10 @@ $itemid = optional_param('itemid',0 ,PARAM_INT);
 $action = optional_param('action','edit',PARAM_TEXT);
 
 
-/*
-//set up the page object
-$PAGE->set_url('/mod/trigger/webhook/managewebhooks.php', array('itemid'=>$itemid, 'id'=>$id, 'type'=>$type));
-$PAGE->set_title(format_string($trigger->name));
-$PAGE->set_heading(format_string($course->fullname));
-$PAGE->set_context($context);
-$PAGE->set_pagelayout('course');
-*/
 
 //are we in new or edit mode?
 if ($itemid) {
-    $item = \local_trigger\webhook\webhooks::fetch_item($itemid);
+    $item = \local_trigger\webhook\customactions::fetch_item($itemid);
 	if(!$item){
 		print_error('could not find item of id:' . $itemid);
 	}
@@ -68,10 +60,10 @@ if ($itemid) {
 $redirecturl = new moodle_url('/local/trigger/webhooks.php', array());
 
     if($action=='sampledata'){
-        $webhook_record = $DB->get_record(\local_trigger\webhook\constants::SAMPLE_TABLE,
+        $customaction_record = $DB->get_record(\local_trigger\webhooks\constants::SAMPLE_TABLE,
             array('event'=>$item->event),'*',IGNORE_MULTIPLE);
-        if($webhook_record) {
-            echo $webhook_record->eventdata;
+        if($customaction_record) {
+            echo $customaction_record->eventdata;
         }else{
             echo "no sample data for this event";
         }
@@ -84,7 +76,7 @@ $redirecturl = new moodle_url('/local/trigger/webhooks.php', array());
         $renderer = $PAGE->get_renderer('local_trigger');
 		echo $renderer->header(get_string('confirmitemdeletetitle', 'local_trigger'),2);
 		echo $renderer->confirm(get_string("confirmitemdelete","local_trigger",$item->event), 
-			new moodle_url('/local/trigger/managewebhooks.php', array('action'=>'delete','itemid'=>$itemid)), 
+			new moodle_url('/local/trigger/managecustomactions.php', array('action'=>'delete','itemid'=>$itemid)),
 			$redirecturl);
 		echo $renderer->footer();
 		return;
@@ -92,13 +84,13 @@ $redirecturl = new moodle_url('/local/trigger/webhooks.php', array());
 	/////// Delete item NOW////////
     }elseif ($action == 'delete'){
     	require_sesskey();
-		$success = \local_trigger\webhook\webhooks::delete_item($itemid);
+		$success = \local_trigger\webhook\customactions::delete_item($itemid);
         redirect($redirecturl);
 	
     }
 
 	//get the mform for our item
-	$mform = new \local_trigger\webhook\webhookform(null,array());
+	$mform = new \local_trigger\webhook\customactionform(null,array());
 	
 
 //if the cancel button was pressed, we are out of here
@@ -107,15 +99,15 @@ if ($mform->is_cancelled()) {
     exit;
 }
 
-//if we have data, then our job here is to save it and return to the webhook edit page
+//if we have data, then our job here is to save it and return to the customaction edit page
 if ($data = $mform->get_data()) {
 		require_sesskey();
 		
 		$theitem = new stdClass;
         $theitem->id = $data->itemid;
-        $theitem->authid = $USER->id;  //do this better soon
-		$theitem->webhook = $data->webhook;
-		$theitem->event = $data->event;
+        $theitem->action = $data->action;
+        $theitem->protocol = $data->protocol;
+        $theitem->params =  local_trigger\webhook\customactions::pack_params($data);
 		$theitem->description = $data->description;
 		$theitem->enabled = $data->enabled;
 		$theitem->modifiedby=$USER->id;
@@ -124,17 +116,17 @@ if ($data = $mform->get_data()) {
 		//reload cache flag.
         //If we are registering a new event, then we need to purge the events cache
 		$reloadcache =false;
-        $eventhooks = local_trigger\webhook\webhooks::fetch_webhooks($theitem->event);
+        $eventhooks = local_trigger\webhook\customactions::fetch_actions($theitem->action);
         if(count($eventhooks)==0){$reloadcache=true;}
 		
 		//first insert a new item if we need to
 		if($edit){
 			//now update the db
-			if (!\local_trigger\webhook\webhooks::update_item($theitem)){
+			if (!\local_trigger\webhook\customactions::update_item($theitem)){
 					redirect($redirecturl,"Could not update trigger item!");
 			}
 		}else{
-			$theitem->id = \local_trigger\webhook\webhooks::add_item($theitem);
+			$theitem->id = \local_trigger\webhook\customactions::add_item($theitem);
 			if (!$theitem->id){
 					redirect($redirecturl,"Could not insert trigger item!");
 			}
@@ -155,6 +147,7 @@ if ($data = $mform->get_data()) {
 if ($edit) {
 	$data = $item;		
 	$data->itemid = $itemid;
+    $data->params = local_trigger\webhook\customactions::unpack_params($data);
 	$mform->set_data($data);
 }else{
 	$data=new \stdClass;
@@ -164,6 +157,7 @@ if ($edit) {
 				
 
 $renderer = $PAGE->get_renderer('local_trigger');
+$PAGE->requires->js_call_amd('local_trigger/managecustomactions', 'init', array());
 echo $renderer->header(get_string('edit', 'local_trigger'),2);
 $mform->display();
 echo $renderer->footer();

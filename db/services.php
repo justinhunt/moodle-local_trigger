@@ -66,6 +66,36 @@ $functions = array(
         'description' => 'Will remove a user from a cohort',
         'type'        => 'write',
         'capabilities'=> 'local/trigger:canmanagewebhooks'
+    ),
+
+    'local_trigger_fetch_function_details' => array(
+        'classname'   => 'local_trigger_services',
+        'methodname'  => 'fetch_function_details',
+        'classpath'   => 'local/trigger/externallib.php',
+        'description' => 'Get the params of a custom web service function',
+        'type'        => 'read',
+        'capabilities'=> 'local/trigger:canmanagewebhooks',
+        'ajax'        => true,
+    ),
+
+    'local_trigger_get_customactions' => array(
+        'classname'   => 'local_trigger_services',
+        'methodname'  => 'get_customactions',
+        'classpath'   => 'local/trigger/externallib.php',
+        'description' => 'Get a list of custom web service functions',
+        'type'        => 'read',
+        'capabilities'=> 'local/trigger:canmanagewebhooks',
+        'ajax'        => true,
+    ),
+
+    'local_trigger_get_customaction_details' => array(
+        'classname'   => 'local_trigger_services',
+        'methodname'  => 'get_customaction_details',
+        'classpath'   => 'local/trigger/externallib.php',
+        'description' => 'Get the params of a custom web service function',
+        'type'        => 'read',
+        'capabilities'=> 'local/trigger:canmanagewebhooks',
+        'ajax'        => true,
     )
 );
 
@@ -87,6 +117,8 @@ $services = array(
             'local_trigger_deregister_webhook',
             'local_trigger_register_webhook',
             'local_trigger_sample_webhook',
+            'local_trigger_get_customactions',
+            'local_trigger_get_customaction_details',
             'core_webservice_get_site_info'
         ),
         'requiredcapability' => 'local/trigger:canmanagewebhooks',

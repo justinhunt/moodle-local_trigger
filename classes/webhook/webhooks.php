@@ -177,7 +177,7 @@ class webhooks
     	$item->event=$event;
     	$item->webhook = $webhook;
     	$item->enabled= $enabled;
-    	$ret = self::insert_item($item);
+    	$ret = self::add_item($item);
     	return $ret;
 	}
 	

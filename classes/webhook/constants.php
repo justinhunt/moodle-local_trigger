@@ -30,6 +30,7 @@ class constants
 {
 const WEBHOOK_NONE =0;
 const WEBHOOK_TABLE = 'local_trigger_webhooks';
+const ACTION_TABLE = 'local_trigger_actions';
 const SAMPLE_TABLE = 'local_trigger_sample';
 const SAMPLE_EVENTS=['\core\event\user_created',
     '\core\event\user_updated',
@@ -40,4 +41,5 @@ const SAMPLE_EVENTS=['\core\event\user_created',
     '\block_xp\event\user_leveledup',
     '\core\event\user_updated'
 ];
+const PROTOCOLS=['put'=>'PUT','post'=>'POST','get'=>'GET'];
 }

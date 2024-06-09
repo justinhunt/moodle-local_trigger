@@ -37,14 +37,25 @@ $PAGE->set_pagelayout('admin');
 
 require_login();
 
-
-$items =  \local_trigger\webhook\webhooks::fetch_items();
-
 //set up renderer and nav
 $renderer = $PAGE->get_renderer('local_trigger');
 echo $renderer->header(get_string('webhooks', 'local_trigger'),2);
-echo $renderer->add_edit_page_links();
-if($items){
-	echo $renderer->show_items_list($items);
+
+//do webhooks
+$webhookitems =  \local_trigger\webhook\webhooks::fetch_items();
+echo $renderer->heading(get_string('webhooks', 'local_trigger'),3);
+echo get_string("webhooks_explanation", "local_trigger");
+echo $renderer->add_edit_page_links('webhooks');
+if($webhookitems){
+	echo $renderer->show_webhook_items_list($webhookitems);
+}
+
+//do custom actions
+$customactions =  \local_trigger\webhook\customactions::fetch_items();
+echo $renderer->heading(get_string('customactions', 'local_trigger'),3);
+echo get_string("customactions_explanation", "local_trigger");
+echo $renderer->add_edit_page_links('customactions');
+if($customactions){
+    echo $renderer->show_customaction_items_list($customactions);
 }
 echo $renderer->footer();

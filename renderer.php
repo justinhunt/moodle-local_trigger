@@ -32,19 +32,27 @@ class local_trigger_renderer extends plugin_renderer_base {
  * @param lesson $lesson
  * @return string
  */
- public function add_edit_page_links() {
+ public function add_edit_page_links($edittype) {
 		global $CFG;
         $itemid = 0;
 
-        $output = $this->output->heading(get_string("whatdonow", "local_trigger"), 3);
-        $links = array();
 
-        $itemurl = new moodle_url('/local/trigger/managewebhooks.php',
-			array('itemid'=>$itemid));
-        $links[] = html_writer::link($itemurl, get_string('additem', "local_trigger"));
+        switch($edittype){
+            case 'webhooks':
+                $links = array();
+                $itemurl = new moodle_url('/local/trigger/managewebhooks.php',
+                    array('itemid'=>$itemid));
+                $links[] = html_writer::link($itemurl, get_string('additemwebhook', "local_trigger"));
+                break;
+            case 'customactions':
 
-		
-        return $this->output->box($output.'<p>'.implode('</p><p>', $links).'</p>', 'generalbox firstpageoptions');
+                $links = array();
+                $itemurl = new moodle_url('/local/trigger/managecustomactions.php',
+                    array('itemid'=>$itemid));
+                $links[] = html_writer::link($itemurl, get_string('additemcustomaction', "local_trigger"));
+                break;
+        }
+        return $this->output->box('<p>'.implode('</p><p>', $links).'</p>', 'generalbox firstpageoptions');
     }
 	
 	/**
@@ -53,7 +61,7 @@ class local_trigger_renderer extends plugin_renderer_base {
 	 * @param integer $courseid
 	 * @return string html of table
 	 */
-	function show_items_list($items){
+	function show_webhook_items_list($items){
 	
 		if(!$items){
 			return $this->output->heading(get_string('noitems',"local_trigger"), 3, 'main');
@@ -110,5 +118,63 @@ class local_trigger_renderer extends plugin_renderer_base {
 		return html_writer::table($table);
 
 	}
+
+    /**
+     * Return the table of items
+     * @param array homework objects
+     * @param integer $courseid
+     * @return string html of table
+     */
+    function show_customaction_items_list($items){
+
+        if(!$items){
+            return $this->output->heading(get_string('noitems',"local_trigger"), 3, 'main');
+        }
+
+        $table = new html_table();
+        $table->id = 'local_trigger_qpanel';
+        $table->head = array(
+            get_string('customaction', "local_trigger"),
+            get_string('protocol', "local_trigger"),
+            get_string('params', "local_trigger"),
+            get_string('description', "local_trigger"),
+            get_string('enabled', "local_trigger"),
+            get_string('actions', "local_trigger")
+        );
+        $table->headspan = array(1,1,1,1,1,2);
+        $table->colclasses = array(
+            'actioncol', 'protocolcol','paramscol', 'descriptioncol','enabledcol', 'edit','preview','delete'
+        );
+
+        //sort by start date
+        core_collator::asort_objects_by_property($items,'timecreated',core_collator::SORT_NUMERIC);
+
+        //loop through the homeworks and add to table
+        foreach ($items as $item) {
+            $row = new html_table_row();
+
+
+            $actioncell = new html_table_cell($item->action);
+            $protocolcell = new html_table_cell($item->protocol);
+            $paramscell = new html_table_cell($item->params);
+            $descriptioncell = new html_table_cell($item->description);
+            $enabledcell = $item->enabled ? new html_table_cell(get_string('yes')) : new html_table_cell(get_string('no')) ;
+
+
+            $actionurl = '/local/trigger/managecustomactions.php';
+            $editurl = new moodle_url($actionurl, array('itemid'=>$item->id));
+            $editlink = html_writer::link($editurl, get_string('edititem', "local_trigger"));
+            $editcell = new html_table_cell($editlink);
+            $deleteurl = new moodle_url($actionurl, array('itemid'=>$item->id,'action'=>'confirmdelete'));
+            $deletelink = html_writer::link($deleteurl, get_string('deleteitem', "local_trigger"));
+            $deletecell = new html_table_cell($deletelink);
+
+            $row->cells = array(
+                $actioncell,$protocolcell, $paramscell, $descriptioncell,$enabledcell, $editcell, $deletecell
+            );
+            $table->data[] = $row;
+        }
+        return html_writer::table($table);
+    }
 
 }
