@@ -121,6 +121,14 @@ if ($data = $mform->get_data()) {
 		
 		//first insert a new item if we need to
 		if($edit){
+
+            //dont change action to an existing one
+            if($item->action != $theitem->action) {
+                if (\local_trigger\webhook\customactions::action_exists($theitem->action)) {
+                    redirect($redirecturl, "The new action already exists in Poodll Trigger. Not updated");
+                }
+            }
+
 			//now update the db
 			if (!\local_trigger\webhook\customactions::update_item($item, $theitem)){
 					redirect($redirecturl,"Could not update trigger item!");
@@ -128,7 +136,7 @@ if ($data = $mform->get_data()) {
 		}else{
             //if it already exists, we are not going to insert it
             if(\local_trigger\webhook\customactions::action_exists($theitem->action)){
-                redirect($redirecturl,"That action already exists in Poodll Trigger. ");
+                redirect($redirecturl,"That action already exists in Poodll Trigger. Not adding ");
             }
             //try to insert it
 			$theitem->id = \local_trigger\webhook\customactions::add_item($theitem);
