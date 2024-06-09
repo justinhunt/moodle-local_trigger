@@ -723,17 +723,17 @@ class local_trigger_services extends external_api {
      */
     public static function get_customaction_details_parameters() {
         $params = array();
-        $params['customactionid'] = new external_value(PARAM_INT, 'The custom action id', VALUE_REQUIRED);
+        $params['customaction'] = new external_value(PARAM_TEXT, 'The custom action name', VALUE_REQUIRED);
         return new external_function_parameters(
             $params
         );
 
     }
-    public static function get_customaction_details($customactionid){
+    public static function get_customaction_details($customaction){
         global $DB;
         // Skip invalid or otherwise incorrectly defined functions.
         try {
-            $action=$DB->get_record(constants::ACTION_TABLE, array('id'=>$customactionid));
+            $action=$DB->get_record(constants::ACTION_TABLE, array('action'=>$customaction),'*',IGNORE_MULTIPLE);
             if($action) {
                 $action = \local_trigger\webhook\customactions::unpack_params($action);
                 $maxfields=10;
