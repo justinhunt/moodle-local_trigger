@@ -764,7 +764,8 @@ class local_trigger_services extends external_api {
             new external_single_structure(
                 array(
                     'field' => new external_value(PARAM_TEXT, 'param field'),
-                    'fieldname' => new external_value(PARAM_TEXT, 'actual api call field name'))
+                    'fieldname' => new external_value(PARAM_TEXT, 'actual api call field name'),
+                    'fieldhelp' => new external_value(PARAM_TEXT, 'api call field desc'),)
             ));
     }
 }//end of class
