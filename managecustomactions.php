@@ -75,7 +75,7 @@ $redirecturl = new moodle_url('/local/trigger/webhooks.php', array());
 
         $renderer = $PAGE->get_renderer('local_trigger');
 		echo $renderer->header(get_string('confirmitemdeletetitle', 'local_trigger'),2);
-		echo $renderer->confirm(get_string("confirmitemdelete","local_trigger",$item->event), 
+		echo $renderer->confirm(get_string("confirmitemdelete","local_trigger",$item->action),
 			new moodle_url('/local/trigger/managecustomactions.php', array('action'=>'delete','itemid'=>$itemid)),
 			$redirecturl);
 		echo $renderer->footer();

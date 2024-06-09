@@ -78,7 +78,6 @@ class customactions
     public static function fetch_item($itemid){
 		global $DB;
         $record = $DB->get_record(constants::ACTION_TABLE,array('id'=>$itemid));
-        
         return $record;
     }
    
