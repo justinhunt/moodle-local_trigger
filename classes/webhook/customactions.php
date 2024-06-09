@@ -118,8 +118,7 @@ class customactions
     }
 
     public static function pack_params($data){
-       $fields = ['customint1','customint2','customint3','customint4','customint5',
-           'customtext1','customtext2','customtext3','customtext4','customtext5',
+       $fields = ['customtext1','customtext2','customtext3','customtext4','customtext5',
            'customtext6','customtext7','customtext8','customtext9','customtext10'];
        $params = [];
        foreach ($fields as $field) {
@@ -131,8 +130,7 @@ class customactions
     }
 
     public static function unpack_params($data){
-        $fields = ['customint1','customint2','customint3','customint4','customint5',
-            'customtext1','customtext2','customtext3','customtext4','customtext5',
+        $fields = ['customtext1','customtext2','customtext3','customtext4','customtext5',
             'customtext6','customtext7','customtext8','customtext9','customtext10'];
         if(isset($data->params) && self::is_json($data->params)) {
             $params = json_decode($data->params);

@@ -735,18 +735,34 @@ class local_trigger_services extends external_api {
         try {
             $action=$DB->get_record(constants::ACTION_TABLE, array('id'=>$customactionid));
             if($action) {
-                $params = $action->params;
+                $action = \local_trigger\webhook\customactions::unpack_params($action);
+                $fields = ['customtext1','customtext2','customtext3','customtext4','customtext5',
+                    'customtext6','customtext7','customtext8','customtext9','customtext10'];
+                $details=[];
+                foreach ($fields as $field) {
+                    if (isset($action->{$field})) {
+                        $onefield = new stdClass();
+                        $onefield->field = $field;
+                        $onefield->fieldname = $action->{$field};
+                        $details[] = $onefield;
+                    }
+                }
             }else{
-                $params = [];
+                $details=[];
             }
         } catch (\Throwable $exception) {
             //$params = ['error'=>$exception->getMessage()];
-            $params = [];
+            $details=[];
         }
-        return $params;
+        return $details;
     }
 
     public static function get_customaction_details_returns() {
-        return new external_value(PARAM_RAW);
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'field' => new external_value(PARAM_TEXT, 'param field'),
+                    'fieldname' => new external_value(PARAM_TEXT, 'actual api call field name'))
+            ));
     }
 }//end of class
