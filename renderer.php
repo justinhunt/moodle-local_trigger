@@ -135,15 +135,14 @@ class local_trigger_renderer extends plugin_renderer_base {
         $table->id = 'local_trigger_qpanel';
         $table->head = array(
             get_string('customaction', "local_trigger"),
-            get_string('protocol', "local_trigger"),
             get_string('params', "local_trigger"),
             get_string('description', "local_trigger"),
             get_string('enabled', "local_trigger"),
             get_string('actions', "local_trigger")
         );
-        $table->headspan = array(1,1,1,1,1,2);
+        $table->headspan = array(1,1,1,1,2);
         $table->colclasses = array(
-            'actioncol', 'protocolcol','paramscol', 'descriptioncol','enabledcol', 'edit','preview','delete'
+            'actioncol','paramscol', 'descriptioncol','enabledcol', 'edit','preview','delete'
         );
 
         //sort by start date
@@ -155,8 +154,7 @@ class local_trigger_renderer extends plugin_renderer_base {
 
 
             $actioncell = new html_table_cell($item->action);
-            $protocolcell = new html_table_cell($item->protocol);
-            $paramscell = new html_table_cell($item->params);
+            $paramscell = new html_table_cell(shorten_text ($item->params, 50));
             $descriptioncell = new html_table_cell($item->description);
             $enabledcell = $item->enabled ? new html_table_cell(get_string('yes')) : new html_table_cell(get_string('no')) ;
 
@@ -170,7 +168,7 @@ class local_trigger_renderer extends plugin_renderer_base {
             $deletecell = new html_table_cell($deletelink);
 
             $row->cells = array(
-                $actioncell,$protocolcell, $paramscell, $descriptioncell,$enabledcell, $editcell, $deletecell
+                $actioncell, $paramscell, $descriptioncell,$enabledcell, $editcell, $deletecell
             );
             $table->data[] = $row;
         }

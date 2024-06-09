@@ -126,7 +126,13 @@ if ($data = $mform->get_data()) {
 					redirect($redirecturl,"Could not update trigger item!");
 			}
 		}else{
+            //if it already exists, we are not going to insert it
+            if(\local_trigger\webhook\customactions::action_exists($theitem->action)){
+                redirect($redirecturl,"That action already exists in Poodll Trigger. ");
+            }
+            //try to insert it
 			$theitem->id = \local_trigger\webhook\customactions::add_item($theitem);
+            //if it fails howl
 			if (!$theitem->id){
 					redirect($redirecturl,"Could not insert trigger item!");
 			}

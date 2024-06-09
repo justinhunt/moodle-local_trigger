@@ -40,8 +40,18 @@ class customactions
         }
 		return $ret;
    }
-   
-   public static function add_item($itemdata) {
+
+    public static function action_exists($action) {
+        global $DB;
+        $triggerservice = $DB->get_record('external_services', array('name'=>'Poodll Trigger'));
+        if(!$triggerservice){
+            return true;//this would be weird and we should really error out, but in any case lets not continue
+        }
+        $ret = $DB->record_exists('external_services_functions', array('externalserviceid'=>$triggerservice->id,'functionname'=>$action));
+        return $ret;
+    }
+
+    public static function add_item($itemdata) {
 		global $DB;
 		$ret = false;
 		
