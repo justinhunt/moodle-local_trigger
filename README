@@ -2,7 +2,7 @@ Broadcast Moodle events to pre-registered webhooks
 ------------------------------------------
 
 This has been designed for use with Zapier but could be used in other situations too.
-It has been tested on Moodle 3.1 but should probably work in Moodle 2.7 or greater.
+
 
 Installation
 --------------
@@ -22,6 +22,14 @@ After changing any of the settings on the settings page, you will need to:
 i) visit your site's notifications page to make sure the new setting does not need to be "installed." If so, just let Moodle do that for you.
 ii) "purge all caches" for any changes to be reflected. Do that at: 
   site admin->debugging->purge all caches
+
+Using with Zapier
+--------------
+The trigger plugin is used by the Poodll NET zapier app. This allows you to connect over 5000 different SaaS apps via their APIs to a Poodll NET/Moodle site.
+https://zapier.com/apps/poodll-net/integrations
+
+If you do not use Poodll NET you can still use the Poodll NET Zapier app with your own Moodle site. You will need to create a web services user on your Moodle site, and then generate a web token that can be pasted into Zapier as the Poodll NET API key. Documentation for how to do that is here:
+https://support.poodll.com/en/support/solutions/articles/19000141629-poodll-trigger-api-key-web-token
 
 
 Justin
