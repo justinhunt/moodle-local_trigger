@@ -702,7 +702,8 @@ class local_trigger_services extends external_api {
             //$customactions = ['error'=>$exception->getMessage()];
             $customactions = [];
         }
-        return json_encode($customactions);
+       // return json_encode($customactions,JSON_UNESCAPED_SLASHES);
+        return $customactions;
     }
 
     public static function get_customactions_returns() {
