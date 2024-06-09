@@ -28,11 +28,12 @@ defined('MOODLE_INTERNAL') || die();
  */
 class customactions
 {
-   public static function delete_item($itemid) {
+   public static function delete_item($itemdata) {
 		global $DB;
 		$ret = false;
 		
-        if ($DB->delete_records(constants::ACTION_TABLE, array('id'=>$itemid))){
+        if ($DB->delete_records(constants::ACTION_TABLE, array('id'=>$itemdata->id))){
+            self::remove_action_from_trigger_service($itemdata->action);
         	$ret=true;
         }else{
         	print_error("Could not delete item");
@@ -47,21 +48,48 @@ class customactions
         $ret=$DB->insert_record(constants::ACTION_TABLE,$itemdata);
         if(!$ret){
         	print_error("Could not insert item");
+        }else{
+            self::add_action_to_trigger_service($itemdata->action);
         }
 		return $ret;
    }  
    
-   public static function update_item($itemdata) {
+   public static function update_item($olditem,$newitem) {
 		global $DB;
 		$ret = false;
 		
-        if ($DB->update_record(constants::ACTION_TABLE,$itemdata)){
+        if ($DB->update_record(constants::ACTION_TABLE,$newitem)){
+            if(!empty($olditem->action) && $olditem->action != $newitem->action) {
+                self::remove_action_from_trigger_service($olditem->action);
+                self::add_action_to_trigger_service($newitem->action);
+            }
         	$ret=true;
         }else{
         	print_error("Could not update item");
         }
 		return $ret;
-   } 
+   }
+
+   public static function add_action_to_trigger_service($functionname){
+       global $DB;
+       $triggerservice = $DB->get_record('external_services', array('name'=>'Poodll Trigger'));
+       if($triggerservice){
+           $exists = $DB->record_exists('external_services_functions', array('externalserviceid'=>$triggerservice->id,'functionname'=>$functionname));
+           if(!$exists){
+               $DB->insert_record('external_services_functions', array('externalserviceid'=>$triggerservice->id,'functionname'=>$functionname));
+           }
+       }
+   }
+    public static function remove_action_from_trigger_service($functionname){
+        global $DB;
+        $triggerservice = $DB->get_record('external_services', array('name'=>'Poodll Trigger'));
+        if($triggerservice){
+            $existingrecord = $DB->get_record('external_services_functions', array('externalserviceid'=>$triggerservice->id,'functionname'=>$functionname));
+            if($existingrecord){
+                $DB->delete_records('external_services_functions', array('id'=>$existingrecord->id));
+            }
+        }
+    }
    
    public static function fetch_items(){
 		global $DB;

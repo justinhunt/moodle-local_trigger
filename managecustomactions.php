@@ -84,7 +84,7 @@ $redirecturl = new moodle_url('/local/trigger/webhooks.php', array());
 	/////// Delete item NOW////////
     }elseif ($action == 'delete'){
     	require_sesskey();
-		$success = \local_trigger\webhook\customactions::delete_item($itemid);
+		$success = \local_trigger\webhook\customactions::delete_item($item);
         redirect($redirecturl);
 	
     }
@@ -122,7 +122,7 @@ if ($data = $mform->get_data()) {
 		//first insert a new item if we need to
 		if($edit){
 			//now update the db
-			if (!\local_trigger\webhook\customactions::update_item($theitem)){
+			if (!\local_trigger\webhook\customactions::update_item($item, $theitem)){
 					redirect($redirecturl,"Could not update trigger item!");
 			}
 		}else{
