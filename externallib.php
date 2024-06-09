@@ -692,9 +692,11 @@ class local_trigger_services extends external_api {
         global $DB;
         // Skip invalid or otherwise incorrectly defined functions.
         try {
-            $customactions=$DB->get_records_menu(constants::ACTION_TABLE, array('enabled'=>1));
+            $customactions=$DB->get_records(constants::ACTION_TABLE, array('enabled'=>1),'','id,action');
             if(!$customactions){
                 $customactions = [];
+            }else{
+                $customactions = array_values($customactions);
             }
         } catch (\Throwable $exception) {
             //$customactions = ['error'=>$exception->getMessage()];
@@ -735,7 +737,7 @@ class local_trigger_services extends external_api {
             //$params = ['error'=>$exception->getMessage()];
             $params = [];
         }
-        return json_encode($params);
+        return $params;
     }
 
     public static function get_customaction_details_returns() {
