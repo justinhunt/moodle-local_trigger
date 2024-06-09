@@ -696,7 +696,7 @@ class local_trigger_services extends external_api {
             if(!$customactions){
                 $customactions = [];
             }else{
-                $customactions = array_values($customactions);
+                //$customactions = $customactions;
             }
         } catch (\Throwable $exception) {
             //$customactions = ['error'=>$exception->getMessage()];
