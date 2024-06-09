@@ -81,24 +81,22 @@ class customactionform extends \moodleform {
         $mform->setType('protocol', PARAM_TEXT);
         $mform->setDefault('protocol', 'post');
 
-        //custom int fields
-        /*
-        $fields_int=['customint1','customint2','customint3','customint4','customint5'];
-        foreach($fields_int as $field){
-            $mform->addElement('text', $field, get_string($field, 'local_trigger'), array('size'=>10, 'class'=>'local_trigger_' . $field));
-            $mform->setType($field, PARAM_INT);
-        }
-        */
+
 
         //custom text fields
-        $fields_text=['customtext1','customtext2','customtext3','customtext4','customtext5','customtext6','customtext7','customtext8','customtext9','customtext10'];
-        foreach($fields_text as $field){
-            $mform->addElement('text', $field, get_string($field, 'local_trigger'), array('size'=>70, 'class'=>'local_trigger_' . $field));
+        $maxfields=10;
+        //for($fields_text as $field){
+        for($i=1;$i<=$maxfields;$i++){
+            $field='customtext'. ($i);
+            $helpfield='customhelp'. ($i);
+            $mform->addElement('text', $field, get_string('customtext', 'local_trigger',$i), array('size'=>70, 'class'=>'local_trigger_' . $field));
             $mform->setType($field, PARAM_TEXT);
-            $mform->addElement('static',$field .'_label','', '<div id="'.$field.'_label" class="local_trigger_customtext_label"></div>');
+            $mform->addElement('text', $helpfield, get_string('customhelp', 'local_trigger',$i), array('size'=>70, 'class'=>'local_trigger_' . $field));
+            $mform->setType($helpfield, PARAM_TEXT);
         }
 
 		$mform->addElement('selectyesno', 'enabled', get_string('enabled', 'local_trigger'));
+        $mform->setDefault('enabled', true);
 
 		//add the action buttons
         $this->add_action_buttons(get_string('cancel'), get_string('saveitem', 'local_trigger'));

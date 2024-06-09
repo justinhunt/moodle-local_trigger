@@ -118,25 +118,37 @@ class customactions
     }
 
     public static function pack_params($data){
-       $fields = ['customtext1','customtext2','customtext3','customtext4','customtext5',
-           'customtext6','customtext7','customtext8','customtext9','customtext10'];
+       $maxfields=10;
        $params = [];
-       foreach ($fields as $field) {
+        for($i=1;$i<=$maxfields;$i++){
+            $field='customtext'. ($i);
+            $helpfield='customhelp'. ($i);
            if(isset($data->$field) &&!empty($data->$field)){
                $params[$field] = $data->$field;
+               if (isset($data->{$helpfield})) {
+                   $params[$helpfield] = $data->$helpfield;
+               }else{
+                   $params[$helpfield]  = '';
+               }
            }
        }
        return json_encode($params);
     }
 
     public static function unpack_params($data){
-        $fields = ['customtext1','customtext2','customtext3','customtext4','customtext5',
-            'customtext6','customtext7','customtext8','customtext9','customtext10'];
+       $maxfields=10;
         if(isset($data->params) && self::is_json($data->params)) {
             $params = json_decode($data->params);
-            foreach ($fields as $field) {
+            for($i=1;$i<=$maxfields;$i++){
+                $field='customtext'. ($i);
+                $helpfield='customhelp'. ($i);
                 if (isset($params->{$field}) && !empty($params->{$field})) {
                     $data->$field = $params->{$field};
+                    if (isset($params->{$field})) {
+                        $data->$helpfield = $params->{$helpfield};
+                    }else{
+                        $data->$helpfield = '';
+                    }
                 }
             }
         }

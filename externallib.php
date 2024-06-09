@@ -736,14 +736,16 @@ class local_trigger_services extends external_api {
             $action=$DB->get_record(constants::ACTION_TABLE, array('id'=>$customactionid));
             if($action) {
                 $action = \local_trigger\webhook\customactions::unpack_params($action);
-                $fields = ['customtext1','customtext2','customtext3','customtext4','customtext5',
-                    'customtext6','customtext7','customtext8','customtext9','customtext10'];
+                $maxfields=10;
                 $details=[];
-                foreach ($fields as $field) {
+                for($i=1;$i<=$maxfields;$i++){
+                    $field='customtext'. ($i);
+                    $helpfield='customhelp'. ($i);
                     if (isset($action->{$field})) {
                         $onefield = new stdClass();
                         $onefield->field = $field;
                         $onefield->fieldname = $action->{$field};
+                        $onefield->fieldhelp = $action->{$helpfield};
                         $details[] = $onefield;
                     }
                 }
