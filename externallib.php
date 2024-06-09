@@ -706,10 +706,12 @@ class local_trigger_services extends external_api {
      }
 
     public static function get_customactions_returns() {
-        return new external_single_structure(array(
-                    'id' => new external_value(PARAM_STRINGID, 'action id'),
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'id' => new external_value(PARAM_INT, 'action id'),
                     'action' => new external_value(PARAM_RAW, 'action name'))
-            );
+            ));
         //return new external_value(PARAM_RAW);
     }
 
