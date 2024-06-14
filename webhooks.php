@@ -31,8 +31,8 @@ $context = context_system::instance();
 /// Set up the page header
 $PAGE->set_context($context);
 $PAGE->set_url('/local/trigger/webhooks.php');
-$PAGE->set_title(get_string('webhooks','local_trigger'));
-$PAGE->set_heading(get_string('webhooks','local_trigger'));
+$PAGE->set_title(get_string('webhooksandactions','local_trigger'));
+$PAGE->set_heading(get_string('webhooksandactions','local_trigger'));
 $PAGE->set_pagelayout('admin');
 
 require_login();
@@ -56,6 +56,16 @@ echo $renderer->heading(get_string('customactions', 'local_trigger'),3);
 echo get_string("customactions_explanation", "local_trigger");
 echo $renderer->add_edit_page_links('customactions');
 if($customactions){
+    $needs_sync=false;
+    foreach($customactions as $customaction){
+        if($customaction->needs_sync){
+           $needs_sync=true;
+                break;
+        }
+    }
+    if($needs_sync){
+        echo $renderer->add_customaction_sync();
+    }
     echo $renderer->show_customaction_items_list($customactions);
 }
 echo $renderer->footer();

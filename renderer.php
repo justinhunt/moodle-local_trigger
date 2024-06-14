@@ -54,6 +54,15 @@ class local_trigger_renderer extends plugin_renderer_base {
         }
         return $this->output->box('<p>'.implode('</p><p>', $links).'</p>', 'generalbox firstpageoptions');
     }
+
+    public function add_customaction_sync(){
+        $items = array();
+        $itemurl = new moodle_url('/local/trigger/managecustomactions.php',
+            array('action'=>'sync'));
+        $items[] = html_writer::link($itemurl, get_string('sync_customactions', "local_trigger"),array('class'=>'btn btn-primary'));
+        $items[] = html_writer::span(get_string('sync_customactions_help', "local_trigger"));
+        return $this->output->box('<p>'.implode('</p><p>', $items).'</p>', 'generalbox firstpageoptions');
+    }
 	
 	/**
 	 * Return the table of items
@@ -137,12 +146,13 @@ class local_trigger_renderer extends plugin_renderer_base {
             get_string('customaction', "local_trigger"),
             get_string('params', "local_trigger"),
             get_string('description', "local_trigger"),
+            get_string('synced', "local_trigger"),
             get_string('enabled', "local_trigger"),
             get_string('actions', "local_trigger")
         );
-        $table->headspan = array(1,1,1,1,2);
+        $table->headspan = array(1,1,1,1,1,2);
         $table->colclasses = array(
-            'actioncol','paramscol', 'descriptioncol','enabledcol', 'edit','preview','delete'
+            'actioncol','paramscol', 'descriptioncol','synced','enabledcol', 'edit','preview','delete'
         );
 
         //sort by start date
@@ -157,7 +167,7 @@ class local_trigger_renderer extends plugin_renderer_base {
             $paramscell = new html_table_cell(shorten_text ($item->params, 50));
             $descriptioncell = new html_table_cell($item->description);
             $enabledcell = $item->enabled ? new html_table_cell(get_string('yes')) : new html_table_cell(get_string('no')) ;
-
+            $syncedcell = new html_table_cell($item->needs_sync ?  '<i class="fa fa-times"></i>' : '<i class="fa fa-check"></i>');
 
             $actionurl = '/local/trigger/managecustomactions.php';
             $editurl = new moodle_url($actionurl, array('itemid'=>$item->id));
@@ -168,7 +178,7 @@ class local_trigger_renderer extends plugin_renderer_base {
             $deletecell = new html_table_cell($deletelink);
 
             $row->cells = array(
-                $actioncell, $paramscell, $descriptioncell,$enabledcell, $editcell, $deletecell
+                $actioncell, $paramscell, $descriptioncell,$syncedcell,$enabledcell, $editcell, $deletecell
             );
             $table->data[] = $row;
         }

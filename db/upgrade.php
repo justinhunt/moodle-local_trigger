@@ -30,8 +30,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+use local_trigger\webhook\constants;
 
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Execute trigger upgrade from the given old version
@@ -46,7 +47,7 @@ function xmldb_local_trigger_upgrade($oldversion) {
 
 
     if ($oldversion < 2022071501) {
-        $table = new xmldb_table('local_trigger_webhooks');
+        $table = new xmldb_table(constants::WEBHOOK_TABLE);
 
         // Adding fields to table local_trigger_webhooks.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -73,7 +74,7 @@ function xmldb_local_trigger_upgrade($oldversion) {
 
     //Lets use varchar and not text for trigger db fields
     if ($oldversion < 2022112400) {
-        $table = new xmldb_table('local_trigger_webhooks');
+        $table = new xmldb_table(constants::WEBHOOK_TABLE);
         $fields = array(
             new xmldb_field('authid', XMLDB_TYPE_CHAR, '255'),
             new xmldb_field('event', XMLDB_TYPE_CHAR, '255'),
@@ -89,7 +90,7 @@ function xmldb_local_trigger_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022112500) {
-        $table = new xmldb_table('local_trigger_sample');
+        $table = new xmldb_table(constants::SAMPLE_TABLE);
 
         // Adding fields to table
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -112,7 +113,7 @@ function xmldb_local_trigger_upgrade($oldversion) {
     if ($oldversion < 2022122800) {
         //The update.php created local_trigger_sample - "event" field as char(255) field type but install.xml created as text field type.
         //This update will change the text type event fields, to char 255. If its already char(255) it will do nothing.
-        $table = new xmldb_table('local_trigger_sample');
+        $table = new xmldb_table(constants::SAMPLE_TABLE);
         $field = new xmldb_field('event', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
 
         //The field, in reality, will already exist in either form, but let's just be safe and check first
@@ -126,7 +127,7 @@ function xmldb_local_trigger_upgrade($oldversion) {
     }
 
     if ($oldversion < 2024052600) {
-        $table = new xmldb_table('local_trigger_actions');
+        $table = new xmldb_table(constants::ACTION_TABLE);
 
         // Adding fields to table local_trigger_actions.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -147,7 +148,6 @@ function xmldb_local_trigger_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-
         upgrade_plugin_savepoint(true, 2024052600, 'local','trigger');
     }
 

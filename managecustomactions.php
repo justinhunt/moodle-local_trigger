@@ -59,15 +59,9 @@ if ($itemid) {
 //we always head back to the trigger items page
 $redirecturl = new moodle_url('/local/trigger/webhooks.php', array());
 
-    if($action=='sampledata'){
-        $customaction_record = $DB->get_record(\local_trigger\webhooks\constants::SAMPLE_TABLE,
-            array('event'=>$item->event),'*',IGNORE_MULTIPLE);
-        if($customaction_record) {
-            echo $customaction_record->eventdata;
-        }else{
-            echo "no sample data for this event";
-        }
-        die;
+    if($action=='sync'){
+        \local_trigger\webhook\customactions::sync_custom_actions();
+        redirect($redirecturl, get_string('syncedcustomactions', 'local_trigger'));
     }
 
 	//handle delete actions

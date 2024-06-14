@@ -100,16 +100,39 @@ class customactions
             }
         }
     }
+
+    public static function needs_sync($triggerservice,$functionname){
+        global $DB;
+        $exists =false;
+        if($triggerservice){
+            $exists = $DB->record_exists('external_services_functions', array('externalserviceid'=>$triggerservice->id,'functionname'=>$functionname));
+        }
+        return !$exists;
+    }
+
+    public static function sync_custom_actions(){
+       global $DB;
+
+        $existingactions= $DB->get_records(constants::ACTION_TABLE,[]);
+        if($existingactions) {
+            foreach($existingactions as $action) {
+                self::add_action_to_trigger_service($action->action);
+            }
+        }
+    }
    
    public static function fetch_items(){
 		global $DB;
 		//when installing several plugins at once, we can arrive here BEFORE table created. ouch
 		$tables = $DB->get_tables();
+        $triggerservice = $DB->get_record('external_services', array('name'=>'Poodll Trigger'));
 		$records =false;
 		if(in_array(constants::ACTION_TABLE,$tables)) {
             $records = $DB->get_records(constants::ACTION_TABLE, array());
+            foreach($records as $record){
+                $record->needs_sync = self::needs_sync($triggerservice,$record->action);
+            }
         }
-        
         return $records;
     }
     

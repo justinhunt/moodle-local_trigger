@@ -29,6 +29,6 @@ defined('MOODLE_INTERNAL') || die;
 
         $ADMIN->add('root', new admin_category('trigger', new lang_string('pluginname', 'local_trigger')));
         $ADMIN->add('trigger', new admin_externalpage('trigger/webhooks',
-        new lang_string('webhooks', 'local_trigger'),
+        new lang_string('webhooksandactions', 'local_trigger'),
         new moodle_url('/local/trigger/webhooks.php'),'local/trigger:canviewsettings'));
     }
