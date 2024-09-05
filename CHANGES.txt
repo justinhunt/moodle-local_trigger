@@ -1,5 +1,8 @@
 Change List
 =========
+1.1.18 (Build 2024090500)
+- added missing add_to_group and remove_from_group apis
+
 1.1.17 (Build 2024060905)
 - added custom actions
 

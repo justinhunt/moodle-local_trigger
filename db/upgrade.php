@@ -151,6 +151,21 @@ function xmldb_local_trigger_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024052600, 'local','trigger');
     }
 
+    if($oldversion < 2024090500){
+        //We need to sync the custom actions
+        if($DB->count_records(constants::ACTION_TABLE)>0) {
+            //it is too soon to call this, so we use an adhoc task
+            // \local_trigger\webhook\customactions::sync_custom_actions();
+
+            $sync_task = new \local_trigger\task\trigger_sync_adhoc();
+            $sync_task->set_component('local_trigger');
+            \core\task\manager::queue_adhoc_task($sync_task);
+        }
+
+
+        upgrade_plugin_savepoint(true, 2024090500, 'local','trigger');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

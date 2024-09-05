@@ -158,7 +158,7 @@ if ($edit) {
     $data->params = local_trigger\webhook\customactions::unpack_params($data);
 	$mform->set_data($data);
 }else{
-	$data=new \stdClass;
+	$data= new \stdClass();
 	$data->itemid = null;
 	$data->visible = 1;
 }
