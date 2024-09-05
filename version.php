@@ -14,5 +14,5 @@
 $plugin->component = 'local_trigger';
 $plugin->version  = 2024090500;
 $plugin->requires = 2010112400;  // Requires this Moodle version - at least 2.0
-$plugin->release = '1.1.18 (Build 2024090500)';
+$plugin->release = '1.1.18 (Build 2024090501)';
 $plugin->maturity = MATURITY_STABLE;

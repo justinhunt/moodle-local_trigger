@@ -114,6 +114,7 @@ $services = array(
             'core_user_update_users',
             'core_group_add_group_members',
             'core_group_delete_group_members',
+            'core_group_get_course_groups',
             'enrol_manual_enrol_users',
             'enrol_manual_unenrol_users',
             'local_trigger_deregister_webhook',
