@@ -1,5 +1,12 @@
 Change List
 =========
+1.1.19 (Build 2024090502)
+- Added asynchronous webhook delivery via ad-hoc task with retries
+- Added Content-Type: application/json header to webhook calls
+- Accepted all 2xx HTTP response codes for successful webhook delivery
+- Normalized event names with leading backslash and improved lookup
+- Added setting to configure webhook queue delivery
+
 1.1.18 (Build 2024090501)
 - added missing add_to_group and remove_from_group apis
 

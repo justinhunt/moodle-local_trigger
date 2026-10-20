@@ -75,8 +75,8 @@ class local_trigger_services extends external_api {
        // $theitem->id = //new entry so its not specified
         $theitem->authid = $USER->id;  //do this better soon
         $theitem->webhook = $params['hook'];
-        $theitem->event =  $params['event'];
-        $theitem->description =  $params['description'];;
+        $theitem->event = '\\' . ltrim($params['event'], '\\');
+        $theitem->description = $params['description'];
         $theitem->enabled = 1;
         $theitem->modifiedby=$USER->id;
         $theitem->timemodified=time();
@@ -165,7 +165,11 @@ class local_trigger_services extends external_api {
         }
 
 
-        $webhook_record = $DB->get_record(constants::WEBHOOK_TABLE,array('event'=>$params['event'],'webhook'=>$params['hook'],'authid'=>$USER->id));
+        $norm = '\\' . ltrim($params['event'], '\\');
+        $unnorm = ltrim($params['event'], '\\');
+        $webhook_record = $DB->get_record_select(constants::WEBHOOK_TABLE,
+            '(' . $DB->sql_compare_text('event') . ' = ? OR ' . $DB->sql_compare_text('event') . ' = ?) AND webhook = ? AND authid = ?',
+            array($norm, $unnorm, $params['hook'], $USER->id));
         if($webhook_record) {
             $success = \local_trigger\webhook\webhooks::delete_item($webhook_record->id);
         }

@@ -93,6 +93,7 @@ $redirecturl = new moodle_url('/local/trigger/webhooks.php', array());
     }elseif ($action == 'delete'){
     	require_sesskey();
 		$success = \local_trigger\webhook\webhooks::delete_item($itemid);
+        purge_caches([]);
         redirect($redirecturl);
 	
     }
@@ -115,18 +116,12 @@ if ($data = $mform->get_data()) {
         $theitem->id = $data->itemid;
         $theitem->authid = $USER->id;  //do this better soon
 		$theitem->webhook = $data->webhook;
-		$theitem->event = $data->event;
+		$theitem->event = '\\' . ltrim($data->event, '\\');
 		$theitem->description = $data->description;
 		$theitem->enabled = $data->enabled;
 		$theitem->modifiedby=$USER->id;
 		$theitem->timemodified=time();
 
-		//reload cache flag.
-        //If we are registering a new event, then we need to purge the events cache
-		$reloadcache =false;
-        $eventhooks = local_trigger\webhook\webhooks::fetch_webhooks($theitem->event);
-        if(count($eventhooks)==0){$reloadcache=true;}
-		
 		//first insert a new item if we need to
 		if($edit){
 			//now update the db
@@ -140,10 +135,8 @@ if ($data = $mform->get_data()) {
 			}
 		}
 
-		//reload cache if we need to
-        if($reloadcache){
-            purge_caches([]);
-        }
+		//reload caches so observers pick up new or changed webhooks immediately
+        purge_caches([]);
 
 		//go back to edit page
 		redirect($redirecturl);

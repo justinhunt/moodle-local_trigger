@@ -88,9 +88,11 @@ class webhooks
         $webhooks = array();
 
         if($eventname) {
+            $norm = '\\' . ltrim($eventname, '\\');
+            $unnorm = ltrim($eventname, '\\');
             $records = $DB->get_records_select(constants::WEBHOOK_TABLE,
-                     $DB->sql_compare_text('event') . ' = ? AND enabled = ?',
-                    array( $eventname,$enabled));
+                     '(' . $DB->sql_compare_text('event') . ' = ? OR ' . $DB->sql_compare_text('event') . ' = ?) AND enabled = ?',
+                    array($norm, $unnorm, $enabled ? 1 : 0));
         }else{
             $records = $DB->get_records(constants::WEBHOOK_TABLE);
         }
@@ -108,16 +110,18 @@ class webhooks
         $webhooks = array();
 
         if($eventname) {
+            $norm = '\\' . ltrim($eventname, '\\');
+            $unnorm = ltrim($eventname, '\\');
             $records = $DB->get_records_select(constants::WEBHOOK_TABLE,
-                $DB->sql_compare_text('event') . ' = ? AND enabled = ?',
-                array( $eventname,$enabled));
+                '(' . $DB->sql_compare_text('event') . ' = ? OR ' . $DB->sql_compare_text('event') . ' = ?) AND enabled = ?',
+                array($norm, $unnorm, $enabled ? 1 : 0));
         }else{
             $records = $DB->get_records(constants::WEBHOOK_TABLE);
         }
 
         return $records;
     }
-    
+
     public static function call_webhook($webhook, $event_data){
        global $CFG;
         require_once($CFG->libdir . '/filelib.php');
@@ -135,17 +139,16 @@ class webhooks
             $options['CURLOPT_RETURNTRANSFER'] = true;
             $options['CURLOPT_NOBODY'] = false;
             $options['CURLOPT_TIMEOUT'] = 30;
-            $postdata = json_encode($event_data);
+            $postdata = json_encode($event_data, JSON_INVALID_UTF8_SUBSTITUTE);
 
             $curl = new \curl();
+            $curl->setHeader(array('Content-Type: application/json'));
 
-
-            if (isset($postdata)) {
+            if ($postdata !== false) {
                 $content = $curl->post($webhook, $postdata, $options);
             } else {
                 $content = $curl->get($webhook, null, $options);
             }
-
 
             $info       = $curl->get_info();
             $error_no   = $curl->get_errno();
@@ -162,7 +165,7 @@ class webhooks
                 return false;
             }
 
-            if ($info['http_code'] != 200) {
+            if ($info['http_code'] < 200 || $info['http_code'] >= 300) {
                 debugging("cURL request for \"$webhook\" failed, HTTP response code: ". $info['http_code'] , DEBUG_ALL);
                 return false;
             }
