@@ -20,9 +20,13 @@
  * @copyright  2022 Justin Hunt (https://poodll.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once($CFG->libdir . "/externallib.php");
-
-use \local_trigger\webhook\constants;
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
+use core_external\external_warnings;
+use local_trigger\webhook\constants;
 
 class local_trigger_services extends external_api {
 
@@ -668,7 +672,7 @@ class local_trigger_services extends external_api {
         // Skip invalid or otherwise incorrectly defined functions.
         try {
             $function=$DB->get_record('external_functions', array('name'=>$functionname));
-            $details = \external_api::external_function_info($function);
+            $details = external_api::external_function_info($function);
         } catch (\Throwable $exception) {
             $details = ['error'=>$exception->getMessage()];
         }
