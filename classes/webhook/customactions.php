@@ -36,7 +36,7 @@ class customactions
             self::remove_action_from_trigger_service($itemdata->action);
         	$ret=true;
         }else{
-        	print_error("Could not delete item");
+        	throw new \moodle_exception("Could not delete item");
         }
 		return $ret;
    }
@@ -57,7 +57,7 @@ class customactions
 		
         $ret=$DB->insert_record(constants::ACTION_TABLE,$itemdata);
         if(!$ret){
-        	print_error("Could not insert item");
+        	throw new \moodle_exception("Could not insert item");
         }else{
             self::add_action_to_trigger_service($itemdata->action);
         }
@@ -75,7 +75,7 @@ class customactions
             }
         	$ret=true;
         }else{
-        	print_error("Could not update item");
+        	throw new \moodle_exception("Could not update item");
         }
 		return $ret;
    }

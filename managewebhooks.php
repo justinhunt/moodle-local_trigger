@@ -57,7 +57,7 @@ $PAGE->set_pagelayout('course');
 if ($itemid) {
     $item = \local_trigger\webhook\webhooks::fetch_item($itemid);
 	if(!$item){
-		print_error('could not find item of id:' . $itemid);
+		throw new \moodle_exception('could not find item of id:' . $itemid);
 	}
     $edit = true;
 } else {

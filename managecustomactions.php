@@ -49,7 +49,7 @@ $action = optional_param('action','edit',PARAM_TEXT);
 if ($itemid) {
     $item = \local_trigger\webhook\customactions::fetch_item($itemid);
 	if(!$item){
-		print_error('could not find item of id:' . $itemid);
+		throw new \moodle_exception('could not find item of id:' . $itemid);
 	}
     $edit = true;
 } else {

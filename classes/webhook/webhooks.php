@@ -36,7 +36,7 @@ class webhooks
         if ($DB->delete_records(constants::WEBHOOK_TABLE, array('id'=>$itemid))){
         	$ret=true;
         }else{
-        	print_error("Could not delete item");
+        	throw new \moodle_exception("Could not delete item");
         }
 		return $ret;
    }
@@ -47,7 +47,7 @@ class webhooks
 		
         $ret=$DB->insert_record(constants::WEBHOOK_TABLE,$itemdata);
         if(!$ret){
-        	print_error("Could not insert item");
+        	throw new \moodle_exception("Could not insert item");
         }
 		return $ret;
    }  
@@ -59,7 +59,7 @@ class webhooks
         if ($DB->update_record(constants::WEBHOOK_TABLE,$itemdata)){
         	$ret=true;
         }else{
-        	print_error("Could not update item");
+        	throw new \moodle_exception("Could not update item");
         }
 		return $ret;
    } 
