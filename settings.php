@@ -18,7 +18,13 @@ defined('MOODLE_INTERNAL') || die;
     if ($hassiteconfig || has_capability('local/trigger:canviewsettings', \context_system::instance())) {
 
         // Create the new settings page
-        $settings = new admin_settingpage('local_trigger',get_string('triggersettings', 'local_trigger'),'local/trigger:canviewsettings');
+        $settings = new admin_settingpage('local_trigger', get_string('triggersettings', 'local_trigger'), 'local/trigger:canviewsettings');
+        $settings->add(new admin_setting_configcheckbox(
+            'local_trigger/queuedelivery',
+            get_string('queuedelivery', 'local_trigger'),
+            get_string('queuedelivery_desc', 'local_trigger'),
+            1
+        ));
         // Create
         if($ADMIN->locate('localplugins')){
             $ADMIN->add('localplugins', $settings);

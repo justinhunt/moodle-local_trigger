@@ -41,43 +41,68 @@ class event_trigger
         global $DB,$CFG;
         require_once($CFG->dirroot . '/user/profile/lib.php');
 
-        //get the event data.
+        // Get the event data.
         $event_data = $event->get_data();
 
-        //fetch the registered webhooks for that event. We should have one and sometimes more!!
-        $webhooks_records =  webhook\webhooks::fetch_full_webhooks($event_data['eventname']);
+        // Prevent recursion if webhook_called event is triggered.
+        if (strpos($event_data['eventname'], 'webhook_called') !== false) {
+            return;
+        }
 
+        // Fetch the registered webhooks for that event.
+        $webhooks_records = webhook\webhooks::fetch_full_webhooks($event_data['eventname']);
+        if (empty($webhooks_records)) {
+            return;
+        }
 
-        foreach($webhooks_records as $webhook_record) {
-            $webhook=$webhook_record->webhook;
+        // Expand event data (user and course) once before processing webhooks.
+        try {
+            $event_data = self::expand_event($event_data);
+        } catch (\Exception $error) {
+            debugging("fetching user/course data error for trigger request failed with error: " . $error->getMessage(), DEBUG_ALL);
+        }
+
+        $config = get_config('local_trigger');
+        $queuedelivery = !isset($config->queuedelivery) || !empty($config->queuedelivery);
+
+        foreach ($webhooks_records as $webhook_record) {
+            $webhook = $webhook_record->webhook;
             if ($webhook && !empty($webhook)) {
-                //do DB stuff, probably most triggers will need user or course data
-                try {
-                    $event_data = self::expand_event($event_data);
-                } catch (\Exception $error) {
-                    debugging("fetching user/course data error for trigger request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
-                }
+                if ($queuedelivery) {
+                    $task = new \local_trigger\task\send_webhook_adhoc();
+                    $task->set_component('local_trigger');
+                    $customdata = (object)[
+                        'webhook' => $webhook,
+                        'event_data' => $event_data,
+                        'webhook_record' => $webhook_record,
+                        'attemptcount' => 1
+                    ];
+                    $task->set_custom_data($customdata);
+                    \core\task\manager::queue_adhoc_task($task);
+                } else {
+                    // Synchronous delivery fallback
+                    try {
+                        $return = webhook\webhooks::call_webhook($webhook, $event_data);
 
-                //do CURL request
-                try {
-                    $return = webhook\webhooks::call_webhook($webhook, $event_data);
-
-                    //save the last data
-                    if(!in_array($event_data['eventname'],constants::SAMPLE_EVENTS)) {
-                        if ($DB->record_exists(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']))) {
-                            $DB->delete_records(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']));
+                        // Save the last data
+                        if (!in_array($event_data['eventname'], constants::SAMPLE_EVENTS)) {
+                            if ($DB->record_exists(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']))) {
+                                $DB->delete_records(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']));
+                            }
+                            $DB->insert_record(constants::SAMPLE_TABLE, array(
+                                'event' => $event_data['eventname'],
+                                'eventdata' => json_encode($event_data, JSON_INVALID_UTF8_SUBSTITUTE)
+                            ));
                         }
-                        $DB->insert_record(constants::SAMPLE_TABLE, array('event' => $event_data['eventname'], 'eventdata' => json_encode($event_data)));
+                        // Trigger our own event to confirm the hook was sent
+                        \local_trigger\event\webhook_called::create_event($webhook_record, $event_data)->trigger();
+
+                    } catch (\Exception $error) {
+                        debugging("cURL request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
                     }
-                    //trigger our own event to confirm the hooks was sent
-                    \local_trigger\event\webhook_called::create_event($webhook_record, $event_data)->trigger();
-
-
-                } catch (\Exception $error) {
-                    debugging("cURL request for \"$webhook\" failed with error: " . $error->getMessage(), DEBUG_ALL);
-                }//end of try catch
-            }//end of if webhook or empty
-        }//end of it web hooks
+                }
+            }
+        }
     }
 
     public static function expand_event($event_data){
@@ -139,7 +164,10 @@ class event_trigger
         if ($DB->record_exists(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']))) {
             $DB->delete_records(constants::SAMPLE_TABLE, array('event' => $event_data['eventname']));
         }
-        $DB->insert_record(constants::SAMPLE_TABLE, array('event' => $event_data['eventname'], 'eventdata' => json_encode($event_data)));
+        $DB->insert_record(constants::SAMPLE_TABLE, array(
+            'event' => $event_data['eventname'],
+            'eventdata' => json_encode($event_data, JSON_INVALID_UTF8_SUBSTITUTE)
+        ));
     }
 
 }

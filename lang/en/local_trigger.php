@@ -72,3 +72,5 @@ $string['syncedcustomactions'] = "All Custom Actions were synced";
 $string['sync_customactions'] = "Sync Custom Actions NOW";
 $string['sync_customactions_help'] = "Sync Custom Actions - After local_trigger updates your custom actions need to be synced with moodle";
 $string['webhooksandactions'] = "Webhooks and Actions";
+$string['queuedelivery'] = "Queue webhook delivery";
+$string['queuedelivery_desc'] = "Send webhook requests asynchronously in the background via Moodle ad-hoc tasks instead of blocking during the page request. This improves performance and provides automatic retries on temporary network failures.";

@@ -20,9 +20,13 @@
  * @copyright  2022 Justin Hunt (https://poodll.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once($CFG->libdir . "/externallib.php");
-
-use \local_trigger\webhook\constants;
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
+use core_external\external_warnings;
+use local_trigger\webhook\constants;
 
 class local_trigger_services extends external_api {
 
@@ -75,8 +79,8 @@ class local_trigger_services extends external_api {
        // $theitem->id = //new entry so its not specified
         $theitem->authid = $USER->id;  //do this better soon
         $theitem->webhook = $params['hook'];
-        $theitem->event =  $params['event'];
-        $theitem->description =  $params['description'];;
+        $theitem->event = '\\' . ltrim($params['event'], '\\');
+        $theitem->description = $params['description'];
         $theitem->enabled = 1;
         $theitem->modifiedby=$USER->id;
         $theitem->timemodified=time();
@@ -165,7 +169,11 @@ class local_trigger_services extends external_api {
         }
 
 
-        $webhook_record = $DB->get_record(constants::WEBHOOK_TABLE,array('event'=>$params['event'],'webhook'=>$params['hook'],'authid'=>$USER->id));
+        $norm = '\\' . ltrim($params['event'], '\\');
+        $unnorm = ltrim($params['event'], '\\');
+        $webhook_record = $DB->get_record_select(constants::WEBHOOK_TABLE,
+            '(' . $DB->sql_compare_text('event') . ' = ? OR ' . $DB->sql_compare_text('event') . ' = ?) AND webhook = ? AND authid = ?',
+            array($norm, $unnorm, $params['hook'], $USER->id));
         if($webhook_record) {
             $success = \local_trigger\webhook\webhooks::delete_item($webhook_record->id);
         }
@@ -664,7 +672,7 @@ class local_trigger_services extends external_api {
         // Skip invalid or otherwise incorrectly defined functions.
         try {
             $function=$DB->get_record('external_functions', array('name'=>$functionname));
-            $details = \external_api::external_function_info($function);
+            $details = external_api::external_function_info($function);
         } catch (\Throwable $exception) {
             $details = ['error'=>$exception->getMessage()];
         }
