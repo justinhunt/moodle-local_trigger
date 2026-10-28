@@ -4,6 +4,7 @@ Change List
 - now requires Moodle 4.3 or later
 - switched to the core_external web service classes
 - Replaced calls to print_error() and error(), which no longer exist in Moodle, so error pages show their message instead of a fatal error
+- declared support for Moodle 4.3 to 5.3
 
 1.1.19 (Build 2024090502)
 - Added asynchronous webhook delivery via ad-hoc task with retries
